@@ -1,7 +1,34 @@
+#!/bin/bash
 set -e
+
 VERSION="4.5.1"
 OUTPUT_DIR="$(pwd)/build"
 BUILD_DIRECTORY="/tmp/package-saunafs"
+
+print_help() {
+	echo "
+This helper script allows quickly building saunafs debian
+packages. By default, it will download from the releases section of
+SaunaFS github, but you can also specify a option to build from a
+specific git reference, note that if you use a specific version ref, the
+packages will be confusingly named to the git version of the debian folder. Use
+the tags on this repository to change to the version you want!"
+	echo "Options are:"
+	echo "-r <string>: Clone and build from a git reference"
+}
+
+while getopts ":hr:" arg; do
+	case $arg in
+		r)
+			REF="${OPTARG}"
+			;;
+		h | *) # Display help.
+			print_help
+			exit 0
+			;;
+	esac
+done
+
 SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${VERSION}"
 SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
 
@@ -10,10 +37,10 @@ mkdir "${BUILD_DIRECTORY}"
 cp -r debian "${BUILD_DIRECTORY}"
 cd "${BUILD_DIRECTORY}"
 
-if [ -n "$1" ]; then
+if [ -n "$REF" ]; then
 	git clone https://github.com/leil-io/saunafs/
 	cd saunafs
-	git checkout "$1"
+	git checkout "${REF}"
 	cd ..
 	mv saunafs saunafs-${VERSION}
 	tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-${VERSION}
@@ -38,4 +65,4 @@ debuild -us -uc
 cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
 # Actual packages
 cp "${BUILD_DIRECTORY}/saunafs-"*".deb" "${OUTPUT_DIR}"
-rm -r "$BUILD_DIRECTORY"
+rm -rf "${BUILD_DIRECTORY}"
