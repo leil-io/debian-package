@@ -2,6 +2,7 @@
 set -ex
 
 VERSION="4.5.1"
+REVISION="2"
 OUTPUT_DIR="$(pwd)/build"
 BUILD_DIRECTORY="/tmp/package-saunafs"
 PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
@@ -85,8 +86,8 @@ cp -r "${BUILD_DIRECTORY}/debian" "${SOURCE_DIR}"
 
 cd "$SOURCE_DIR"
 mk-build-deps
-sudo apt install "./saunafs-build-deps_${VERSION}_all.deb"
-rm "./saunafs-build-deps_${VERSION}"*
+apt install --yes "./saunafs-build-deps_${VERSION}-${REVISION}_all.deb"
+rm "./saunafs-build-deps_${VERSION}-${REVISION}"*
 
 if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	for patch in "${PATCHES_DIRECTORY}"/*; do

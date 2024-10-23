@@ -1,3 +1,12 @@
+saunafs (4.5.1-2) stable; urgency=medium
+
+  * Split from SaunaFS repository
+  * Added service files
+  * Added missing dependencies
+  * Patches to workaround issues with source
+
+ -- SaunaFS Team <contact@saunafs.com>  Wed, 23 Oct 2024 12:37:10 +0000
+
 saunafs (4.5.1) stable; urgency=high
   * Fix critical issue with uraft assigning floating IP address to all nodes.
    Note that this fix reverts the previous fix for lost IP addresses after
