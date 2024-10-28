@@ -1,8 +1,8 @@
 #!/bin/bash
 set -ex
 
-VERSION="4.5.1"
-REVISION="2"
+VERSION="4.6.0-rc2"
+REVISION="1"
 OUTPUT_DIR="$(pwd)/build"
 BUILD_DIRECTORY="/tmp/package-saunafs"
 PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
