@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-VERSION="4.6.0-rc2"
+VERSION="4.6.0-rc3"
 REVISION="1"
 OUTPUT_DIR="$(pwd)/build"
 BUILD_DIRECTORY="/tmp/package-saunafs"

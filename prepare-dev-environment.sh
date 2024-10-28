@@ -1,4 +1,4 @@
-VERSION="4.6.0-rc2"
+VERSION="4.6.0-rc3"
 BUILD_DIRECTORY="/tmp/dev-saunafs"
 DEBIAN_DIR="$(pwd)/debian"
 
