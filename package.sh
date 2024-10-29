@@ -7,6 +7,8 @@ OUTPUT_DIR="$(pwd)/build"
 BUILD_DIRECTORY="/tmp/package-saunafs"
 PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
 
+rm -rf ${BUILD_DIRECTORY:?}
+
 print_help() {
 	echo "
 This helper script allows quickly building saunafs debian
@@ -85,9 +87,6 @@ rm "${SOURCE_DIR}/debian" -rf
 cp -r "${BUILD_DIRECTORY}/debian" "${SOURCE_DIR}"
 
 cd "$SOURCE_DIR"
-mk-build-deps
-apt install --yes "./saunafs-build-deps_${VERSION}-${REVISION}_all.deb"
-rm "./saunafs-build-deps_${VERSION}-${REVISION}"*
 
 if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	for patch in "${PATCHES_DIRECTORY}"/*; do
@@ -96,9 +95,9 @@ if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	done
 fi
 
-debuild -us -uc
+debuild --preserve-envvar=VERSION_SUFFIX -us -uc
 # Package metadata
 cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
 # Actual packages
 cp "${BUILD_DIRECTORY}/saunafs-"*".deb" "${OUTPUT_DIR}"
-rm -rf "${BUILD_DIRECTORY}"
+rm -rf "${BUILD_DIRECTORY:?}"
