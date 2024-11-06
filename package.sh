@@ -67,18 +67,19 @@ fi
 cp -r debian "${BUILD_DIRECTORY}"
 cd "${BUILD_DIRECTORY}"
 
-if [ -n "$REF" ]; then
-	git clone https://github.com/leil-io/saunafs/
-	cd saunafs
-	git checkout "${REF}"
-	cd ..
-	mv saunafs saunafs-${VERSION}
-	tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-${VERSION}
-	rm -rf saunafs
-else
-	wget https://github.com/leil-io/saunafs/archive/refs/tags/v${VERSION}.tar.gz
-	mv "v${VERSION}.tar.gz" "${SOURCE_TAR}"
+if [ -z "$REF" ]; then
+	REF="v${VERSION}"
 fi
+
+git clone https://github.com/leil-io/saunafs/
+cd saunafs
+git checkout "${REF}"
+GIT_COMMIT=$(git rev-parse HEAD)
+GIT_BRANCH=$REF
+cd ..
+mv saunafs saunafs-${VERSION}
+tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-${VERSION}
+rm -rf saunafs
 
 cp "${SOURCE_TAR}" "${OUTPUT_DIR}"
 tar xf "${SOURCE_TAR}"
@@ -95,7 +96,12 @@ if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	done
 fi
 
-debuild --preserve-envvar=VERSION_SUFFIX -us -uc
+debuild \
+	--preserve-envvar=VERSION_SUFFIX \
+	--set-envvar=GIT_COMMIT=$GIT_COMMIT \
+	--set-envvar=GIT_BRANCH=$GIT_BRANCH \
+	-us -uc
+
 # Package metadata
 cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
 # Actual packages

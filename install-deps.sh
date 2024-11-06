@@ -7,6 +7,8 @@ BUILD_DIRECTORY="/tmp/package-saunafs"
 SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${VERSION}"
 SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
 
+apt install equivs
+
 rm -rf "${BUILD_DIRECTORY:?}"
 mkdir "${BUILD_DIRECTORY}"
 cp -r debian "${BUILD_DIRECTORY}"

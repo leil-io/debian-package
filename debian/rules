@@ -4,10 +4,30 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export VERSION_SUFFIX ?= -unofficial
+export GIT_COMMIT ?= Unknown
+export GIT_BRANCH ?= Unknown
+
 .PHONY: override_dh_strip override_dh_auto_configure override_dh_installsystemd override_dh_installinit
 
+
 override_dh_auto_configure:
-	./configure --with-doc
+	dh_auto_configure --                               \
+	-DCMAKE_BUILD_TYPE=Release                         \
+	-DENABLE_TESTS=NO                                  \
+	-DCMAKE_INSTALL_PREFIX=/                           \
+	-DENABLE_DOCS=YES                                  \
+	-DENABLE_CLIENT_LIB=YES                            \
+	-DGSH_CAN_HOST_LOCAL_FS=YES                        \
+	-DENABLE_NFS_GANESHA=YES                           \
+	-DVERSION_SUFFIX=$(VERSION_SUFFIX)                 \
+	-DENABLE_URAFT=YES                                 \
+	-DENABLE_POLONAISE=OFF                             \
+	-DCMAKE_CXX_FLAGS="-Wno-error=maybe-uninitialized" \
+	-DGENERATE_GIT_INFO=OFF                            \
+	-DGIT_COMMIT=$(GIT_COMMIT)                         \
+	-DGIT_BRANCH=$(GIT_BRANCH)                         \
+	;
 
 # override_dh_gencontrol:
 # 	dh_gencontrol -- $(if $(version),-v$(version),)
@@ -24,4 +44,4 @@ override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-start -psaunafs-uraft --name=saunafs-ha-master
 
 %:
-	dh $@
+	dh $@ --buildsystem=cmake

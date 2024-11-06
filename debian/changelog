@@ -1,7 +1,7 @@
 saunafs (4.6.0-rc3-1) UNRELEASED; urgency=medium
   * Update package to 4.6.0-rc3
 
- -- SaunaFS Team <contact@saunafs.com>  Mon, 28 Oct 2024 14:40:51 +0200
+ -- SaunaFS Team <contact@saunafs.com>  Fri, 01 Nov 2024 10:52:19 +0200
 
 saunafs (4.5.1-2) stable; urgency=medium
   * Split from SaunaFS repository
