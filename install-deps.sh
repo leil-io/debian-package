@@ -1,7 +1,6 @@
 #!/bin/bash
 
-VERSION="4.6.0-rc3"
-REVISION="1"
+. ./version.sh
 BUILD_DIRECTORY="/tmp/package-saunafs"
 
 SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${VERSION}"
