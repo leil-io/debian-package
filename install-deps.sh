@@ -1,12 +1,13 @@
 #!/bin/bash
 
+set -x
 . ./version.sh
 BUILD_DIRECTORY="/tmp/package-saunafs"
-
+export DEBIAN_FRONTEND=noninteractive
 SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${VERSION}"
 SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
 
-apt install equivs
+apt-get install --yes equivs
 
 rm -rf "${BUILD_DIRECTORY:?}"
 mkdir "${BUILD_DIRECTORY}"
@@ -22,7 +23,7 @@ cp -r "${BUILD_DIRECTORY}/debian" "${SOURCE_DIR}"
 
 cd "$SOURCE_DIR"
 mk-build-deps
-apt install --yes "./saunafs-build-deps_${VERSION}-${REVISION}_all.deb"
+apt-get install --yes "./saunafs-build-deps_${VERSION}-${REVISION}_all.deb"
 rm "./saunafs-build-deps_${VERSION}-${REVISION}"*
 
 rm -rf "${BUILD_DIRECTORY:?}"

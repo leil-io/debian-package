@@ -16,41 +16,13 @@ SaunaFS github, but you can also specify a option to build from a
 specific git reference, note that if you use a specific version ref, the
 packages will be confusingly named to the version of the debian folder. Use
 the tags on this repository to change to the version you want!"
-	echo "Options are:"
-	echo "-r <string>: Clone and build from a git reference"
-	echo "-p <path/to/file>: Apply a single patch file"
-	echo "-f <path/to/directory>: Apply patches from directory"
+	echo "environment variables are:"
+	echo "REF=<string>: Clone and build from a git reference"
+	echo "PATCH=<path/to/patch>: Apply a single patch file"
+	echo "PATCHES_DIR=<path/to/directory>: Apply patches from directory"
 }
 
 PATCHES=()
-
-while getopts ":hr:p:f:" arg; do
-	case $arg in
-		r)
-			REF="${OPTARG}"
-			;;
-		p)
-			if [ ! -f "${OPTARG}" ]; then
-				echo "${OPTARG} not found!"
-				exit 1
-			fi
-			PATCHES+=("${OPTARG}")
-			;;
-		f)
-			if [ ! -d "${OPTARG}" ]; then
-				echo "${OPTARG} not found!"
-				exit 1
-			fi
-			for patch in "${OPTARG}"/*.patch; do
-				PATCHES+=("${patch}")
-			done
-			;;
-		h | *) # Display help.
-			print_help
-			exit 0
-			;;
-	esac
-done
 
 SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${VERSION}"
 SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
@@ -58,8 +30,13 @@ SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
 mkdir -p "${OUTPUT_DIR}"
 mkdir "${BUILD_DIRECTORY}"
 mkdir "${PATCHES_DIRECTORY}"
-if [ ${#PATCHES[@]} != 0 ]; then
-	for patch in $PATCHES; do
+
+if [[ -n $PATCH ]]; then
+	cp "${PATCH}" "${PATCHES_DIRECTORY}"
+fi
+
+if [ -n $PATCHES_DIR ]; then
+	for patch in $PATCHES_DIR; do
 		cp "${patch}" "${PATCHES_DIRECTORY}"
 	done
 fi

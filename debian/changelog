@@ -1,7 +1,13 @@
-saunafs (4.6.0-rc3-2) UNRELEASED; urgency=medium
-  * Update package to 4.6.0-rc3
+saunafs (4.6.0-rc3-3) UNRELEASED; urgency=medium
+  * Update upstream to 4.6.0-rc3
 
- -- SaunaFS Team <contact@saunafs.com>  Fri, 01 Nov 2024 10:52:19 +0200
+  [ Revision 2 ]
+  * Use build system in rules file, instead of relying on ./control
+
+  [ Revision 3 ]
+  * Add some missing dependencies
+
+ -- SaunaFS Team <contact@saunafs.com>  Thu, 07 Nov 2024 18:38:18 +0200
 
 saunafs (4.5.1-2) stable; urgency=medium
   * Split from SaunaFS repository
