@@ -1,0 +1,741 @@
+diff --git a/cmake/EnvTests.cmake b/cmake/EnvTests.cmake
+index ec5b8a3b..0377abf6 100644
+--- a/cmake/EnvTests.cmake
++++ b/cmake/EnvTests.cmake
+@@ -71,7 +71,7 @@ endif()
+ check_functions("${REQUIRED_FUNCTIONS}" TRUE)
+ 
+ set(OPTIONAL_FUNCTIONS strerror perror pread pwrite readv writev getrusage
+-  setitimer posix_fadvise fallocate)
++  setitimer posix_fadvise fallocate mallopt)
+ check_functions("${OPTIONAL_FUNCTIONS}" false)
+ 
+ CHECK_LIBRARY_EXISTS(rt clock_gettime "time.h" SAUNAFS_HAVE_CLOCK_GETTIME)
+diff --git a/config.h.in b/config.h.in
+index 4894366b..31984621 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -104,6 +104,7 @@
+ #cmakedefine SAUNAFS_HAVE_SETITIMER
+ #cmakedefine SAUNAFS_HAVE_STD_TO_STRING
+ #cmakedefine SAUNAFS_HAVE_STD_STOULL
++#cmakedefine SAUNAFS_HAVE_MALLOPT
+ 
+ /* [CMake] Optional functions #2 */
+ #cmakedefine SAUNAFS_HAVE_DUP2
+diff --git a/doc/sfschunkserver.cfg.5.adoc b/doc/sfschunkserver.cfg.5.adoc
+index 1c8c1280..4bbd104b 100644
+--- a/doc/sfschunkserver.cfg.5.adoc
++++ b/doc/sfschunkserver.cfg.5.adoc
+@@ -37,6 +37,13 @@ sfschunkserver)
+ *LOCK_MEMORY*:: whether to perform mlockall() to avoid swapping out
+ sfschunkserver process (default is 0, i.e. no)
+ 
++*LIMIT_GLIBC_MALLOC_ARENAS*:: Linux only: limit glibc malloc arenas to given
++value - prevents from using huge amount of virtual memory. This can influence
++performance by reducing memory fragmentation and improving cache locality, but
++it may also lead to contention and reduced parallelism in multi-threaded
++applications. Use it in constrained memory environments, recommended values are
++4 or 8. (default is 0: disabled or let glibc decide)
++
+ *NICE_LEVEL*:: nice level to run daemon with (default is -19 if possible; note:
+ process must be started as root to increase priority)
+ 
+diff --git a/doc/sfsmaster.cfg.5.adoc b/doc/sfsmaster.cfg.5.adoc
+index 280a8da8..c0805887 100644
+--- a/doc/sfsmaster.cfg.5.adoc
++++ b/doc/sfsmaster.cfg.5.adoc
+@@ -52,6 +52,13 @@ sfsmaster)
+ *LOCK_MEMORY*:: whether to perform mlockall() to avoid swapping out sfsmaster
+ process (default is 0, i.e. no)
+ 
++*LIMIT_GLIBC_MALLOC_ARENAS*:: Linux only: limit glibc malloc arenas to given
++value - prevents from using huge amount of virtual memory. This can influence
++performance by reducing memory fragmentation and improving cache locality, but
++it may also lead to contention and reduced parallelism in multi-threaded
++applications. Use it in constrained memory environments, recommended values are
++4 or 8. (default is 0: disabled or let glibc decide)
++
+ *NICE_LEVEL*:: nice level to run daemon with (default is -19 if possible; note:
+ process must be started as root to increase priority)
+ 
+diff --git a/doc/sfsmetalogger.cfg.5.adoc b/doc/sfsmetalogger.cfg.5.adoc
+index 1c1ead3b..fd731b3e 100644
+--- a/doc/sfsmetalogger.cfg.5.adoc
++++ b/doc/sfsmetalogger.cfg.5.adoc
+@@ -36,6 +36,13 @@ name of process to place in syslog messages (default is sfsmetalogger)
+ *LOCK_MEMORY*::
+ whether to perform mlockall() to avoid swapping out sfsmetalogger process (default is 0, i.e. no)
+ 
++*LIMIT_GLIBC_MALLOC_ARENAS*:: Linux only: limit glibc malloc arenas to given
++value - prevents from using huge amount of virtual memory. This can influence
++performance by reducing memory fragmentation and improving cache locality, but
++it may also lead to contention and reduced parallelism in multi-threaded
++applications. Use it in constrained memory environments, recommended values are
++4 or 8. (default is 0: disabled or let glibc decide)
++
+ *NICE_LEVEL*::
+ nice level to run daemon with (default is -19 if possible; note: process must be started as root to
+ increase priority)
+diff --git a/src/data/sfschunkserver.cfg.in b/src/data/sfschunkserver.cfg.in
+index 0e24bbd3..438e21bf 100644
+--- a/src/data/sfschunkserver.cfg.in
++++ b/src/data/sfschunkserver.cfg.in
+@@ -17,6 +17,14 @@
+ ## (Default: 0)
+ # LOCK_MEMORY = 0
+ 
++## Linux only: limit glibc malloc arenas to given value - prevents from using
++## huge amount of virtual memory. This can influence performance by reducing
++## memory fragmentation and improving cache locality, but it may also lead to
++## contention and reduced parallelism in multi-threaded applications.
++## Use it in constrained memory environments, recommended values are 4 or 8.
++## (default is 0: disabled or let glibc decide)
++# LIMIT_GLIBC_MALLOC_ARENAS = 0
++
+ ## Nice level to run daemon with (default is -19 if possible).
+ # NICE_LEVEL = -19
+ 
+diff --git a/src/data/sfsmaster.cfg.in b/src/data/sfsmaster.cfg.in
+index 956ffdca..b4c716f9 100644
+--- a/src/data/sfsmaster.cfg.in
++++ b/src/data/sfsmaster.cfg.in
+@@ -27,6 +27,14 @@
+ ## (Default: 0)
+ # LOCK_MEMORY = 0
+ 
++## Linux only: limit glibc malloc arenas to given value - prevents from using
++## huge amount of virtual memory. This can influence performance by reducing
++## memory fragmentation and improving cache locality, but it may also lead to
++## contention and reduced parallelism in multi-threaded applications.
++## Use it in constrained memory environments, recommended values are 4 or 8.
++## (default is 0: disabled or let glibc decide)
++# LIMIT_GLIBC_MALLOC_ARENAS = 0
++
+ ## Nice level to run daemon with, when possible to set.
+ ## (Default: -19)
+ # NICE_LEVEL = -19
+diff --git a/src/data/sfsmetalogger.cfg.in b/src/data/sfsmetalogger.cfg.in
+index 8c27a10b..95d4ae1f 100644
+--- a/src/data/sfsmetalogger.cfg.in
++++ b/src/data/sfsmetalogger.cfg.in
+@@ -15,6 +15,14 @@
+ ## (Default: 0)
+ # LOCK_MEMORY = 0
+ 
++## Linux only: limit glibc malloc arenas to given value - prevents from using
++## huge amount of virtual memory. This can influence performance by reducing
++## memory fragmentation and improving cache locality, but it may also lead to
++## contention and reduced parallelism in multi-threaded applications.
++## Use it in constrained memory environments, recommended values are 4 or 8.
++## (default is 0: disabled or let glibc decide)
++# LIMIT_GLIBC_MALLOC_ARENAS = 0
++
+ ## Nice level to run daemon with, when possible to set.
+ ## (Default: -19)
+ # NICE_LEVEL = -19
+diff --git a/src/main/main.cc b/src/main/main.cc
+index 269934f8..db337836 100644
+--- a/src/main/main.cc
++++ b/src/main/main.cc
+@@ -25,6 +25,7 @@
+ #include <fcntl.h>
+ #include <grp.h>
+ #include <ios>
++#include <malloc.h>
+ #include <pwd.h>
+ #include <signal.h>
+ #include <stdio.h>
+@@ -108,6 +109,10 @@ static pam_handle_t *gPAMHandle=NULL;
+ 
+ static bool gRunAsDaemon = true;
+ 
++constexpr uint8_t kDefaultLimitGlibcArenas = 0;
++constexpr const char *kEnvironmentVariableNotDefined = nullptr;
++static uint8_t gLimitGlibcArenas = kDefaultLimitGlibcArenas;
++
+ /// When set to true, config will be reloaded after the current loop
+ 
+ static int signalpipe[2];
+@@ -812,6 +817,28 @@ void makePidFile(const std::string &name) {
+ 	ofs << std::to_string(getpid()) << std::endl;
+ }
+ 
++/// (glibc specific) Tune glibc malloc arenas to avoid high virtual memory usage
++inline void tuneMalloc() {
++#if defined(SAUNAFS_HAVE_MALLOPT) && defined(M_ARENA_MAX) && \
++    defined(M_ARENA_TEST)
++	gLimitGlibcArenas =
++	    cfg_getuint8("LIMIT_GLIBC_MALLOC_ARENAS", kDefaultLimitGlibcArenas);
++
++	if (gLimitGlibcArenas > 0) {
++		if (::getenv("MALLOC_ARENA_MAX") == kEnvironmentVariableNotDefined) {
++			safs::log_info("Setting glibc malloc arena max to {}",
++			               gLimitGlibcArenas);
++			::mallopt(M_ARENA_MAX, static_cast<int>(gLimitGlibcArenas));
++		}
++		if (::getenv("MALLOC_ARENA_TEST") == kEnvironmentVariableNotDefined) {
++			safs::log_info("Setting glibc malloc arena test to {}",
++			               gLimitGlibcArenas);
++			::mallopt(M_ARENA_TEST, static_cast<int>(gLimitGlibcArenas));
++		}
++	}
++#endif
++}
++
+ int main(int argc,char **argv) {
+ 	char *wrkdir;
+ 	char *appname;
+@@ -1044,6 +1071,8 @@ int main(int argc,char **argv) {
+ 	}
+ #endif
+ 
++	tuneMalloc();
++
+ 	if (initialize()) {
+ 		if (getrlimit(RLIMIT_NOFILE,&rls)==0) {
+ 			safs_pretty_syslog(LOG_NOTICE,"open files limit: %lu",(unsigned long)(rls.rlim_cur));
+diff --git a/src/mount/readdata.cc b/src/mount/readdata.cc
+index c3c0d040..51725898 100644
+--- a/src/mount/readdata.cc
++++ b/src/mount/readdata.cc
+@@ -33,6 +33,7 @@
+ #include <map>
+ #include <mutex>
+ #include <thread>
++#include <vector>
+ 
+ #include "common/connection_pool.h"
+ #include "common/datapack.h"
+@@ -58,7 +59,13 @@
+ 
+ inline std::condition_variable readOperationsAvailable;
+ inline std::mutex gReadaheadRequestsContainerMutex;
+-inline int kMaxReadCacheRequestRetries = 10;
++inline int kMaxThresholdTicks = 180;
++uint32_t maxWindowConsideringMaxReadCacheSize;
++uint64_t timesRequestedMemory = 0;
++uint64_t successfulTimesRequestedMemory = 0;
++constexpr double kTimesRequestedMemoryLowerSuccessRate = 0.3;
++constexpr double kTimesRequestedMemoryUpperSuccessRate = 0.8;
++constexpr uint32_t kMinCacheExpirationTime = 1;
+ 
+ std::unique_ptr<IMemoryInfo> createMemoryInfo() {
+     std::unique_ptr<IMemoryInfo> memoryInfo;
+@@ -79,12 +86,26 @@ bool readShouldWaitForSystemMemory(size_t bytesToReadLeft) {
+ 			bytesToReadLeft > avalaibleSystemMemory;
+ }
+ 
+-inline void increaseUsedReadCacheMemory(size_t bytesToReadLeft) {
+-	gUsedReadCacheMemory += bytesToReadLeft;
+-}
+-
+-inline void decreaseUsedReadCacheMemory(size_t bytesToReadLeft) {
+-	gUsedReadCacheMemory -= bytesToReadLeft;
++inline void updateCacheExpirationTime() {
++	if (gOriginalCacheExpirationTime_ms.load() == 0) {
++		gCacheExpirationTime_ms.store(0);
++	} else if (gCacheExpirationTime_ms.load() == 0) {
++		gCacheExpirationTime_ms.store(gOriginalCacheExpirationTime_ms.load());
++	} else if (timesRequestedMemory > 0) {
++		double successRate =
++		    static_cast<double>(successfulTimesRequestedMemory) /
++		    static_cast<double>(timesRequestedMemory);
++		if (successRate < kTimesRequestedMemoryLowerSuccessRate) {
++			gCacheExpirationTime_ms = std::max<uint32_t>(
++			    gCacheExpirationTime_ms / 3, kMinCacheExpirationTime);
++		} else if (successRate > kTimesRequestedMemoryUpperSuccessRate) {
++			gCacheExpirationTime_ms =
++			    std::min<uint32_t>(gCacheExpirationTime_ms * 2,
++			                       gOriginalCacheExpirationTime_ms.load());
++		}
++	}
++	timesRequestedMemory = 0;
++	successfulTimesRequestedMemory = 0;
+ }
+ 
+ uint32_t getBytesToBeReadFromCS(uint32_t index, uint32_t offset, uint32_t size,
+@@ -200,8 +221,9 @@ bool ReadaheadOperationsManager::request(
+ 
+ 	rrec->cache.query(offset, size, result, false);
+ 
+-	uint64_t recommendedSize = round_up_to_blocksize(
+-	    std::max<uint64_t>(size, rrec->readahead_adviser.window()));
++	uint64_t recommendedSize = round_up_to_blocksize(std::max<uint64_t>(
++	    size, std::min<uint32_t>(rrec->readahead_adviser.window(),
++	                             maxWindowConsideringMaxReadCacheSize)));
+ 
+ 	if (!result.empty() && result.frontOffset() <= offset &&
+ 	    offset + size <= result.endOffset()) {
+@@ -293,6 +315,10 @@ RequestConditionVariablePair *ReadaheadOperationsManager::addRequest_(
+ void ReadaheadOperationsManager::addExtraRequests_(
+     ReadRecord *rrec, uint64_t currentOffset, uint64_t satisfyingSize,
+     uint64_t maximumRequestedOffset) {
++	if (gReadCacheMemoryAlmostExceeded.load()) {
++		return;
++	}
++
+ 	if (!rrec->readaheadRequests.empty()) {
+ 		maximumRequestedOffset = rrec->readaheadRequests.lastPendingRequest()
+ 		                             ->requestPtr->endOffset();
+@@ -382,13 +408,19 @@ void* read_data_delayed_ops(void *arg) {
+ 
+ 	pthread_setname_np(pthread_self(), "readDelayedOps");
+ 
++	std::unique_lock gMutexLock(gMutex, std::defer_lock);
++	std::unique_lock gUsedReadCacheMemoryLock(gReadCacheMemoryMutex,
++	                                          std::defer_lock);
++	int ticksSinceLastUpdate = 0;
++
+ 	for (;;) {
+ 		gReadConnectionPool.cleanup();
+-		std::unique_lock gMutexLock(gMutex);
++		gMutexLock.lock();
+ 		if (readDataTerminate) {
+ 			return EMPTY_REQUEST;
+ 		}
+ 		auto readRecordIt = gActiveReadRecords.begin();
++		std::vector<ReadRecord *> toCollectGarbage;
+ 		while (readRecordIt != gActiveReadRecords.end()) {
+ 			if (readRecordIt->second->refreshCounter < REFRESHTICKS) {
+ 				++(readRecordIt->second->refreshCounter);
+@@ -406,10 +438,28 @@ void* read_data_delayed_ops(void *arg) {
+ 					readRecordIt->second->cache.clear();
+ 				}
+ 			} else {
++				toCollectGarbage.push_back(readRecordIt->second);
++
+ 				++readRecordIt;
+ 			}
+ 		}
++
++		ticksSinceLastUpdate++;
++
++		for (auto *readRecord : toCollectGarbage) {
++			std::unique_lock inodeLock(readRecord->mutex);
++			readRecord->cache.collectGarbage();
++		}
++
++		if (ticksSinceLastUpdate == kMaxThresholdTicks) {
++			gUsedReadCacheMemoryLock.lock();
++			updateCacheExpirationTime();
++			gUsedReadCacheMemoryLock.unlock();
++			ticksSinceLastUpdate = 0;
++		}
++
+ 		gMutexLock.unlock();
++
+ 		usleep(USECTICK);
+ 	}
+ }
+@@ -461,9 +511,10 @@ void* read_worker(void *arg) {
+ 		request->state = ReadaheadRequestState::kProcessing;
+ 
+ 		uint64_t bytes_read = 0;
+-		int error_code = read_to_buffer(readRecord, request->request_offset(),
+-		                                request->bytes_to_read_left(),
+-		                                entry->buffer, &bytes_read, reader);
++		int error_code =
++		    read_to_buffer(readRecord, request->request_offset(),
++		                   request->bytes_to_read_left(), entry->buffer,
++		                   &bytes_read, reader, entryLock);
+ 
+ 		entry->release();
+ 		entry->reset_timer();
+@@ -520,6 +571,7 @@ void read_data_end(ReadRecord *rrec) {
+ 
+ 	std::unique_lock inodeLock(rrec->mutex);
+ 	rrec->readaheadRequests.discardAllPendingRequests();
++	rrec->stopThread.store(true);
+ 	inodeLock.unlock();
+ }
+ 
+@@ -545,11 +597,13 @@ void read_data_init(uint32_t retries,
+ 	gChunkserverConnectTimeout_ms = chunkserverConnectTimeout_ms;
+ 	gChunkserverWaveReadTimeout_ms = chunkServerWaveReadTimeout_ms;
+ 	gChunkserverTotalReadTimeout_ms = chunkserverTotalReadTimeout_ms;
++	gOriginalCacheExpirationTime_ms = cache_expiration_time_ms;
+ 	gCacheExpirationTime_ms = cache_expiration_time_ms;
+ 	gReadaheadMaxWindowSize = readahead_max_window_size_kB * 1024;
+ 	gReadCacheMaxSize.store((read_chache_max_size_percentage * 0.01) *
+ 	                        gMemoryInfo->getTotalMemory());
+ 	gReadWorkers = read_workers;
++	maxWindowConsideringMaxReadCacheSize = gReadCacheMaxSize.load() / gReadWorkers;
+ 	gMaxReadaheadRequests = max_readahead_requests;
+ 	gPrefetchXorStripes = prefetchXorStripes;
+ 	gBandwidthOveruse = bandwidth_overuse;
+@@ -568,7 +622,7 @@ void read_data_init(uint32_t retries,
+ 	gTweaks.registerVariable("ReadConnectTimeout", gChunkserverConnectTimeout_ms);
+ 	gTweaks.registerVariable("ReadWaveTimeout", gChunkserverWaveReadTimeout_ms);
+ 	gTweaks.registerVariable("ReadTotalTimeout", gChunkserverTotalReadTimeout_ms);
+-	gTweaks.registerVariable("CacheExpirationTime", gCacheExpirationTime_ms);
++	gTweaks.registerVariable("CacheExpirationTime", gOriginalCacheExpirationTime_ms);
+ 	gTweaks.registerVariable("ReadaheadMaxWindowSize", gReadaheadMaxWindowSize);
+ 	gTweaks.registerVariable("ReadCacheMaxSize", gReadCacheMaxSize);
+ 	gTweaks.registerVariable("MaxReadaheadRequests", gMaxReadaheadRequests);
+@@ -631,7 +685,8 @@ static void print_error_msg(ChunkReader& reader, uint32_t try_counter, const Exc
+ 
+ int read_to_buffer(ReadRecord *rrec, uint64_t current_offset,
+                    uint64_t bytes_to_read, std::vector<uint8_t> &read_buffer,
+-                   uint64_t *bytes_read, ChunkReader &reader) {
++                   uint64_t *bytes_read, ChunkReader &reader,
++                   std::unique_lock<std::mutex> &entryLock) {
+ 	uint32_t try_counter = 0;
+ 	uint32_t prepared_inode = 0; // this is always different than any real inode
+ 	uint32_t prepared_chunk_id = 0;
+@@ -673,10 +728,12 @@ int read_to_buffer(ReadRecord *rrec, uint64_t current_offset,
+ 				getBytesToBeReadFromCS(reader.index(), offset_in_chunk,
+ 										size_in_chunk, reader.fileLength());
+ 			std::unique_lock usedMemoryLock(gReadCacheMemoryMutex);
++			timesRequestedMemory++;
+ 			if (readShouldWaitForSystemMemory(read_cache_bytes_to_reserve)) {
+ 				throw RecoverableReadException(
+ 				    "Not enough read cache memory available for reading");
+ 			}
++			successfulTimesRequestedMemory++;
+ 			increaseUsedReadCacheMemory(read_cache_bytes_to_reserve);
+ 			last_read_cache_bytes_to_reserve = read_cache_bytes_to_reserve;
+ 			total_read_cache_bytes_to_reserve += read_cache_bytes_to_reserve;
+@@ -717,15 +774,11 @@ int read_to_buffer(ReadRecord *rrec, uint64_t current_offset,
+ 			} else {
+ 				std::unique_lock usedMemoryLock(gReadCacheMemoryMutex);
+ 				decreaseUsedReadCacheMemory(last_read_cache_bytes_to_reserve);
+-				total_read_cache_bytes_to_reserve -=
+-				    last_read_cache_bytes_to_reserve;
++				total_read_cache_bytes_to_reserve -= last_read_cache_bytes_to_reserve;
+ 				usedMemoryLock.unlock();
+-				if (strcmp(ex.what(), "Not enough read cache memory available for reading") == 0) {
+-					std::unique_lock inodeLock(rrec->mutex);
+-					rrec->cache.collectGarbage();
+-					inodeLock.unlock();
+-				}
++				entryLock.unlock();
+ 				usleep(sleep_timeout.remaining_us());
++				entryLock.lock();
+ 				sleep_time_ms = read_data_sleep_time_ms(try_counter);
+ 			}
+ 			try_counter++;
+@@ -769,7 +822,7 @@ int read_data(ReadRecord *rrec, off_t fuseOffset, size_t fuseSize,
+ 			                               bytesToReadLeft,
+ 			                               result.inputBuffer(),
+ 			                               &bytesRead,
+-			                               reader);
++			                               reader, entryLock);
+ 			result.back()->done = true;
+ 
+ 			if (errorCode != SAUNAFS_STATUS_OK) {
+@@ -780,7 +833,6 @@ int read_data(ReadRecord *rrec, off_t fuseOffset, size_t fuseSize,
+ 	} else {
+ 		// use the read operations manager to process the request
+ 		RequestConditionVariablePair *rcvpPtr = nullptr;
+-
+ 		std::unique_lock inodeLock(rrec->mutex);
+ 		bool mustWait = gReadaheadOperationsManager.request(
+ 		    rrec, fuseOffset, fuseSize, offset, size, result, rcvpPtr);
+diff --git a/src/mount/readdata.h b/src/mount/readdata.h
+index 9ef49ffb..735decf0 100644
+--- a/src/mount/readdata.h
++++ b/src/mount/readdata.h
+@@ -32,9 +32,8 @@
+ #include "mount/readdata_cache.h"
+ 
+ inline std::atomic<uint32_t> gReadaheadMaxWindowSize;
+-inline std::atomic<uint32_t> gCacheExpirationTime_ms;
++inline std::atomic<uint32_t> gOriginalCacheExpirationTime_ms;
+ inline std::atomic<uint32_t> gMaxReadaheadRequests;
+-inline std::atomic<uint64_t> gReadCacheMaxSize;
+ 
+ enum class ReadaheadRequestState {
+ 	kInqueued,
+@@ -211,6 +210,7 @@ struct ReadRecord {
+ 	std::atomic<uint8_t> refreshCounter = 0;
+ 	std::atomic<uint16_t> requestsNotDone = 0;
+ 	bool expired = false; //gMutex
++	std::atomic<bool> stopThread{false};
+ 
+ 	ReadRecord(uint32_t inode)
+ 	    : cache(gCacheExpirationTime_ms),
+@@ -372,7 +372,8 @@ ReadRecord *read_data_new(uint32_t inode);
+ void read_data_end(ReadRecord *rr);
+ int read_to_buffer(ReadRecord *rrec, uint64_t current_offset,
+                    uint64_t bytes_to_read, std::vector<uint8_t> &read_buffer,
+-                   uint64_t *bytes_read, ChunkReader &reader);
++                   uint64_t *bytes_read, ChunkReader &reader,
++                   std::unique_lock<std::mutex> &entryLock);
+ int read_data(ReadRecord *rr, off_t fuseOffset, size_t fuseSize,
+               uint64_t offset, uint32_t size, ReadCache::Result &ret);
+ void read_data_init(uint32_t retries, uint32_t chunkserverRoundTripTime_ms,
+diff --git a/src/mount/readdata_cache.h b/src/mount/readdata_cache.h
+index 9c647b0f..b166155b 100644
+--- a/src/mount/readdata_cache.h
++++ b/src/mount/readdata_cache.h
+@@ -31,6 +31,7 @@
+ #include <deque>
+ #include <map>
+ #include <memory>
++#include <mutex>
+ #include <numeric>
+ 
+ #include <boost/intrusive/list.hpp>
+@@ -38,8 +39,29 @@
+ 
+ #define MISSING_OFFSET_PTR nullptr
+ 
++inline std::atomic<uint64_t> gReadCacheMaxSize;
+ inline std::mutex gReadCacheMemoryMutex;
+ inline uint64_t gUsedReadCacheMemory;
++inline std::atomic<bool> gReadCacheMemoryAlmostExceeded = false;
++inline std::atomic<uint32_t> gCacheExpirationTime_ms;
++
++constexpr double kReadCacheThreshold = 0.8;
++
++inline void updateReadCacheMemoryAlmostExceeded() {
++	gReadCacheMemoryAlmostExceeded =
++	    gUsedReadCacheMemory >=
++	    static_cast<uint64_t>(kReadCacheThreshold * gReadCacheMaxSize.load());
++}
++
++inline void increaseUsedReadCacheMemory(size_t bytesToReadLeft) {
++	gUsedReadCacheMemory += bytesToReadLeft;
++	updateReadCacheMemoryAlmostExceeded();
++}
++
++inline void decreaseUsedReadCacheMemory(size_t bytesToReadLeft) {
++	gUsedReadCacheMemory -= bytesToReadLeft;
++	updateReadCacheMemoryAlmostExceeded();
++}
+ 
+ class ReadCache {
+ public:
+@@ -84,7 +106,7 @@ public:
+ 		}
+ 
+ 		void reset_timer() {
+-			return timer.reset();
++			timer.reset();
+ 		}
+ 
+ 		Offset endOffset() const {
+@@ -291,6 +313,8 @@ public:
+ 
+ 	void collectGarbage(unsigned count = 1000000) {
+ 		unsigned reserved_count = count;
++		expiration_time_ = gCacheExpirationTime_ms.load();
++
+ 		while (!lru_.empty() && count-- > 0) {
+ 			Entry *e = std::addressof(lru_.front());
+ 			if (e->expired(expiration_time_) && e->done) {
+@@ -299,6 +323,7 @@ public:
+ 				break;
+ 			}
+ 		}
++
+ 		clearReserved(reserved_count);
+ 	}
+ 
+@@ -420,7 +445,7 @@ protected:
+ 		} else {
+ 			assert(e->refcount == 0);
+ 			std::unique_lock usedMemoryLock(gReadCacheMemoryMutex);
+-			gUsedReadCacheMemory -= e->buffer.size();
++			decreaseUsedReadCacheMemory(e->buffer.size());
+ 			usedMemoryLock.unlock();
+ 			delete e;
+ 		}
+@@ -434,14 +459,15 @@ protected:
+ 			Entry *e = std::addressof(reserved_entries_.front());
+ 			if (e->refcount == 0) {
+ 				usedMemoryLock.lock();
+-				gUsedReadCacheMemory -= e->buffer.size();
++				decreaseUsedReadCacheMemory(e->buffer.size());
+ 				usedMemoryLock.unlock();
+ 				reserved_entries_.pop_front();
+ 				delete e;
+ 			} else {
+ 				assert(e->refcount >= 0);
+-				reserved_entries_.splice(reserved_entries_.end(), reserved_entries_,
+-							 reserved_entries_.begin());
++				reserved_entries_.splice(reserved_entries_.end(),
++				                         reserved_entries_,
++				                         reserved_entries_.begin());
+ 			}
+ 		}
+ 	}
+diff --git a/src/mount/sauna_client.cc b/src/mount/sauna_client.cc
+index 6ae6ff7b..c677d03f 100644
+--- a/src/mount/sauna_client.cc
++++ b/src/mount/sauna_client.cc
+@@ -206,14 +206,14 @@ bool isSpecialInode(Inode ino) {
+ 
+ enum {IO_NONE,IO_READ,IO_WRITE,IO_READONLY,IO_WRITEONLY};
+ 
+-typedef struct _finfo {
++struct finfo {
+ 	uint8_t mode;
+ 	void *data;
+ 	uint8_t use_flocks;
+ 	uint8_t use_posixlocks;
+ 	pthread_mutex_t lock;
+ 	pthread_mutex_t flushlock;
+-} finfo;
++};
+ 
+ static DirEntryCache gDirEntryCache;
+ static unsigned gDirEntryCacheMaxSize = 100000;
+diff --git a/src/mount/sauna_client.h b/src/mount/sauna_client.h
+index 1fee059c..df0d6e0c 100644
+--- a/src/mount/sauna_client.h
++++ b/src/mount/sauna_client.h
+@@ -83,6 +83,7 @@ struct FsInitParams {
+ 	static constexpr bool     kDefaultIgnoreFlush = false;
+ #ifdef _WIN32
+ 	static constexpr unsigned kDefaultWriteCacheSize = 50;
++	static constexpr int      kDefaultEnableStatusUpdaterThread = 0;
+ #else
+ 	static constexpr unsigned kDefaultWriteCacheSize = 0;
+ #endif
+@@ -148,6 +149,7 @@ struct FsInitParams {
+ 	             acl_cache_timeout(kDefaultAclCacheTimeout), acl_cache_size(kDefaultAclCacheSize),
+ #ifdef _WIN32
+ 	             mounting_uid(USE_LOCAL_ID), mounting_gid(USE_LOCAL_ID),
++	             enable_status_updater_thread(kDefaultEnableStatusUpdaterThread),
+ #endif
+ 	             ignore_flush(kDefaultIgnoreFlush), verbose(kDefaultVerbose), direct_io(kDirectIO) {
+ 	}
+@@ -181,6 +183,7 @@ struct FsInitParams {
+ 	             acl_cache_timeout(kDefaultAclCacheTimeout), acl_cache_size(kDefaultAclCacheSize),
+ #ifdef _WIN32
+ 	             mounting_uid(USE_LOCAL_ID), mounting_gid(USE_LOCAL_ID),
++				 enable_status_updater_thread(kDefaultEnableStatusUpdaterThread),
+ #endif
+ 	             ignore_flush(kDefaultIgnoreFlush), verbose(kDefaultVerbose), direct_io(kDirectIO) {
+ 	}
+@@ -232,6 +235,7 @@ struct FsInitParams {
+ 	int mounting_uid;
+ 	int mounting_gid;
+ 	std::unordered_set<uint32_t> allowed_users;
++	unsigned enable_status_updater_thread;
+ #endif
+ 
+ 	bool ignore_flush;
+diff --git a/tests/test_suites/ShortSystemTests/test_limit_glibc_malloc_arenas.sh b/tests/test_suites/ShortSystemTests/test_limit_glibc_malloc_arenas.sh
+new file mode 100644
+index 00000000..acdc0e08
+--- /dev/null
++++ b/tests/test_suites/ShortSystemTests/test_limit_glibc_malloc_arenas.sh
+@@ -0,0 +1,88 @@
++timeout_set "2 minutes"
++
++CHUNKSERVERS=3 \
++	MASTER_CUSTOM_GOALS="1 ec21: \$ec(2,1)" \
++	AUTO_SHADOW_MASTER="NO" \
++	MOUNT_EXTRA_CONFIG="sfscachemode=NEVER" \
++	CHUNKSERVER_EXTRA_CONFIG="MAGIC_DEBUG_LOG = $TEMP_DIR/log|LOG_FLUSH_ON=DEBUG" \
++	MASTER_EXTRA_CONFIG="MAGIC_DEBUG_LOG = $TEMP_DIR/log|LOG_FLUSH_ON=DEBUG" \
++	setup_local_empty_saunafs info
++
++cd "${info[mount0]}"
++
++# Generates some files in parallel
++function generateAndValidateFiles() {
++	echo "Generating the files"
++
++	for file in $(seq 1 100); do
++		size=$((file * 1024))
++		FILE_SIZE=${size} assert_success file-generate "file.${file}" &
++	done
++
++	wait
++}
++
++function getActualArenaLimitFromLog() {
++	grep -ioP '(?<=Setting glibc malloc arena max to )[0-9]+' "${TEMP_DIR}/log" | tail -n 1
++}
++
++function getVirtualMemoryForPid() {
++	pid=${1}
++	ps -o vsz= -p ${pid}
++}
++
++# Generate some files to populate the filesystem
++generateAndValidateFiles
++
++# Master is consuming more memory after restart, so the comparison is not fair.
++# This restart makes the later comparison in better conditions.
++saunafs_master_daemon restart
++saunafs_wait_for_all_ready_chunkservers
++
++arenas=2
++
++### Test the limit in the first chunkserver ###
++
++# Get initial values
++cs0Pid=$(saunafs_chunkserver_daemon 0 test 2>&1 | tr -d '\0' | awk '{print $NF}')
++virtualMemoryCS0=$(getVirtualMemoryForPid ${cs0Pid})
++echo "CS0 PID: ${cs0Pid} - Virtual memory: ${virtualMemoryCS0}"
++
++# Edit the configuration to set the limit and restart
++echo "LIMIT_GLIBC_MALLOC_ARENAS = ${arenas}" >> "${info[chunkserver0_cfg]}"
++saunafs_chunkserver_daemon 0 restart
++saunafs_wait_for_all_ready_chunkservers
++
++# Check if the limit was set
++effectiveArenaLimit=$(getActualArenaLimitFromLog)
++assert_equals ${arenas} ${effectiveArenaLimit}
++echo "Arena limit set to ${effectiveArenaLimit} for chunkserver 0"
++
++# Check if the memory usage decreased
++cs0PidAfter=$(saunafs_chunkserver_daemon 0 test 2>&1 | tr -d '\0' | awk '{print $NF}')
++virtualMemoryCS0After=$(getVirtualMemoryForPid ${cs0PidAfter})
++echo "CS0 PID: ${cs0PidAfter} - Virtual memory: ${virtualMemoryCS0After}"
++assert_less_than ${virtualMemoryCS0After} ${virtualMemoryCS0}
++
++### Test the limit in the master ###
++
++# Get initial values
++master0Pid=$(saunafs_master_n 0 test 2>&1 | tr -d '\0' | awk '{print $NF}')
++virtualMemoryMaster0=$(getVirtualMemoryForPid ${master0Pid})
++echo "Master0 PID: ${master0Pid} - Virtual memory: ${virtualMemoryMaster0}"
++
++# Edit the configuration to set the limit and restart
++echo "LIMIT_GLIBC_MALLOC_ARENAS = ${arenas}" >> "${info[master0_cfg]}"
++saunafs_master_daemon restart
++saunafs_wait_for_all_ready_chunkservers
++
++# Check if the limit was set
++effectiveArenaLimit=$(getActualArenaLimitFromLog)
++assert_equals ${arenas} ${effectiveArenaLimit}
++echo "Arena limit set to ${effectiveArenaLimit} for master 0"
++
++# Check if the memory usage decreased
++master0PidAfter=$(saunafs_master_n 0 test 2>&1 | tr -d '\0' | awk '{print $NF}')
++virtualMemoryMaster0After=$(getVirtualMemoryForPid ${master0PidAfter})
++echo "Master0 PID: ${master0PidAfter} - Virtual memory: ${virtualMemoryMaster0After}"
++assert_less_than ${virtualMemoryMaster0After} ${virtualMemoryMaster0}
+diff --git a/tests/test_suites/ShortSystemTests/test_read_cache_low_level_parallel_reads.sh b/tests/test_suites/ShortSystemTests/test_read_cache_low_level_parallel_reads.sh
+new file mode 100644
+index 00000000..ea0d1bd7
+--- /dev/null
++++ b/tests/test_suites/ShortSystemTests/test_read_cache_low_level_parallel_reads.sh
+@@ -0,0 +1,21 @@
++timeout_set 3 minutes
++
++CHUNKSERVERS=1 \
++	MOUNT_EXTRA_CONFIG="sfscachemode=NEVER`
++			`|cacheexpirationtime=10000`
++			`|readcachemaxsizepercentage=1`
++			`|sfschunkserverwavereadto=2000`
++			`|sfsioretries=50`
++			`|readaheadmaxwindowsize=5000`
++			`|sfschunkservertotalreadto=8000" \
++	setup_local_empty_saunafs info
++
++cd ${info[mount0]}
++
++num_jobs=18
++five_percent_ram_mb=$(awk '/MemTotal/ {print int($2 / 1024 * 0.05)}' /proc/meminfo)
++size_per_job=$(echo "${five_percent_ram_mb} / ${num_jobs}" | bc)
++echo "five_percent_ram_mb: ${five_percent_ram_mb}, num_jobs: ${num_jobs}, size_per_job: ${size_per_job}"
++
++fio --name=test_multiple_reads --directory=${info[mount0]} --size=${size_per_job}M --rw=write --ioengine=libaio --group_reporting --numjobs=${num_jobs} --bs=1M --direct=1 --iodepth=1
++fio --name=test_multiple_reads --directory=${info[mount0]} --size=${size_per_job}M --rw=read --ioengine=libaio --group_reporting --numjobs=${num_jobs} --bs=1M --direct=1 --iodepth=1
