@@ -1,3 +1,9 @@
+saunafs (4.7.0-3) stable; urgency=medium
+
+  * Fix missing Ganesha package
+
+ -- Saunafs Team <support@saunafs.com>  Mon, 10 Feb 2025 13:39:09 +0200
+
 saunafs (4.7.0-2) stable; urgency=medium
 
   * Add patch for LIMIT_GLIBC_MALLOC_ARENAS option
