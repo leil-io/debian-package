@@ -80,8 +80,13 @@ export VCPKG_ROOT="${BUILD_DIRECTORY}/vcpkg"
 cd "${SOURCE_DIR}"
 "${VCPKG_ROOT}/vcpkg" install
 
-# Default from dpkg-source, with vcpkg_installed as extra at the end
-dpkg-buildpackage -b
+debuild \
+	--preserve-envvar=VERSION_SUFFIX \
+	--preserve-envvar=VCPKG_ROOT \
+	--set-envvar=GIT_COMMIT=$GIT_COMMIT \
+	--set-envvar=GIT_BRANCH=$GIT_BRANCH \
+	-us -uc
+
 # Package metadata
 cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
 # Actual packages
