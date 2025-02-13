@@ -50,11 +50,11 @@ fi
 git clone https://github.com/leil-io/saunafs/
 cd saunafs
 git checkout "${REF}"
-GIT_COMMIT=$(git rev-parse HEAD)
-GIT_BRANCH=$REF
+export GIT_COMMIT=$(git rev-parse HEAD)
+export GIT_BRANCH=$REF
 cd ..
-mv saunafs saunafs-${VERSION}
-tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-${VERSION}
+mv saunafs saunafs-"${VERSION}"
+tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-"${VERSION}"
 rm -rf saunafs
 
 cp "${SOURCE_TAR}" "${OUTPUT_DIR}"
@@ -72,12 +72,16 @@ if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	done
 fi
 
-debuild \
-	--preserve-envvar=VERSION_SUFFIX \
-	--set-envvar=GIT_COMMIT=$GIT_COMMIT \
-	--set-envvar=GIT_BRANCH=$GIT_BRANCH \
-	-us -uc
+cd "${BUILD_DIRECTORY}"
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+export VCPKG_ROOT="${BUILD_DIRECTORY}/vcpkg"
+cd "${SOURCE_DIR}"
+"${VCPKG_ROOT}/vcpkg" install
 
+# Default from dpkg-source, with vcpkg_installed as extra at the end
+dpkg-buildpackage -b
 # Package metadata
 cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
 # Actual packages
