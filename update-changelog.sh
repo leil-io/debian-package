@@ -1,1 +1,1 @@
-NAME="Saunafs Team" EMAIL="support@saunafs.com" "${@}"
+NAME="Saunafs Team" EMAIL="support@saunafs.com" dch -v "${1}" "Update SaunaFS version"
