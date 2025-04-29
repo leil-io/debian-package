@@ -5,6 +5,7 @@ After=network-online.target network.target
 
 [Service]
 Type=forking
+TimeoutSec=0
 ExecStart=/usr/sbin/sfschunkserver start
 ExecStop=/usr/sbin/sfschunkserver stop
 ExecReload=/usr/sbin/sfschunkserver reload
