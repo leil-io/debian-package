@@ -1,1 +1,1 @@
-extend-diff-ignore = "^vcpkg_installed"
+extend-diff-ignore = "vcpkg"

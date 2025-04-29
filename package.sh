@@ -20,12 +20,12 @@ the tags on this repository to change to the version you want!"
 	echo "REF=<string>: Clone and build from a git reference"
 	echo "PATCH=<path/to/patch>: Apply a single patch file"
 	echo "PATCHES_DIR=<path/to/directory>: Apply patches from directory"
+	echo "SNAPSHOT=[false|true]: Whether to add date and git info to version (default false)"
 }
 
-PATCHES=()
+: "${SNAPSHOT:=false}"
 
-SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${VERSION}"
-SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
+PATCHES=()
 
 mkdir -p "${OUTPUT_DIR}"
 mkdir "${BUILD_DIRECTORY}"
@@ -35,7 +35,7 @@ if [[ -n $PATCH ]]; then
 	cp "${PATCH}" "${PATCHES_DIRECTORY}"
 fi
 
-if [ -n $PATCHES_DIR ]; then
+if [ -n "$PATCHES_DIR" ]; then
 	for patch in $PATCHES_DIR; do
 		cp "${patch}" "${PATCHES_DIRECTORY}"
 	done
@@ -53,13 +53,29 @@ git checkout "${REF}"
 export GIT_COMMIT=$(git rev-parse HEAD)
 export GIT_BRANCH=$REF
 cd ..
-mv saunafs saunafs-"${VERSION}"
-tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-"${VERSION}"
+
+if [ "$SNAPSHOT" = true ]; then
+	SNAPSHOT_TS=$(date +%Y.%m.%d~%H.%M.%S)
+	SNAPSHOT_COMMIT=""
+	SNAPSHOT_BRANCH=""
+	SNAPSHOT_COMMIT="~$GIT_COMMIT"
+	SNAPSHOT_BRANCH="~$GIT_BRANCH"
+	UPSTREAM_VERSION="${VERSION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
+	DEB_VERSION="${UPSTREAM_VERSION}-${REVISION}"
+else
+	UPSTREAM_VERSION="${VERSION}"
+	DEB_VERSION="${VERSION}-${REVISION}"
+fi
+
+mv saunafs saunafs-"${UPSTREAM_VERSION}"
+SOURCE_TAR="saunafs_${UPSTREAM_VERSION}.orig.tar.gz"
+tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-"${UPSTREAM_VERSION}"
 rm -rf saunafs
 
 cp "${SOURCE_TAR}" "${OUTPUT_DIR}"
 tar xf "${SOURCE_TAR}"
 
+SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${UPSTREAM_VERSION}"
 rm "${SOURCE_DIR}/debian" -rf
 cp -r "${BUILD_DIRECTORY}/debian" "${SOURCE_DIR}"
 
@@ -72,13 +88,17 @@ if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	done
 fi
 
-cd "${BUILD_DIRECTORY}"
-git clone https://github.com/microsoft/vcpkg.git
-cd vcpkg
+git submodule update --init
+cd "vcpkg"
 ./bootstrap-vcpkg.sh
-export VCPKG_ROOT="${BUILD_DIRECTORY}/vcpkg"
-cd "${SOURCE_DIR}"
+export VCPKG_ROOT="$(pwd)"
+cd ${SOURCE_DIR}
 "${VCPKG_ROOT}/vcpkg" install
+
+if [ "$SNAPSHOT" = true ]; then
+	sed -i "1 s/(${VERSION}-${REVISION})/(${DEB_VERSION})/" debian/changelog
+fi
+cat debian/changelog
 
 debuild \
 	--preserve-envvar=VERSION_SUFFIX \
@@ -86,6 +106,7 @@ debuild \
 	--set-envvar=GIT_COMMIT=$GIT_COMMIT \
 	--set-envvar=GIT_BRANCH=$GIT_BRANCH \
 	-us -uc
+
 
 # Package metadata
 cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
