@@ -1,3 +1,9 @@
+saunafs (4.10.0-1) stable; urgency=medium
+
+  * Update SaunaFS version
+
+ -- Saunafs Team <support@saunafs.com>  Wed, 21 May 2025 17:09:32 +0300
+
 saunafs (4.9.0-1) stable; urgency=medium
 
   * Update SaunaFS version
