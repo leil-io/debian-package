@@ -6,9 +6,9 @@ PartOf=saunafs-uraft.service
 [Service]
 Type=forking
 TimeoutSec=0
-ExecStart=/usr/sbin/sfsmaster -o ha-cluster-managed -o initial-personality=shadow start
-ExecStop=/usr/sbin/sfsmaster -o ha-cluster-managed -o initial-personality=shadow stop
-ExecReload=/usr/sbin/sfsmaster -o ha-cluster-managed -o initial-personality=shadow reload
+ExecStart=/usr/sbin/saunafs-uraft-helper start-saunafs-ha-master
+ExecStop=/usr/sbin/saunafs-uraft-helper stop-saunafs-ha-master
+ExecReload=/usr/sbin/saunafs-uraft-helper reload-saunafs-ha-master
 Restart=no
 
 [Install]
