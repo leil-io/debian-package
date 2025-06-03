@@ -68,6 +68,10 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          adduser
 Description: SaunaFS common files
  Files and services common for all SaunaFS daemons.
+ .
+ This package also offers helper scripts to manage
+ migrations between major versions and other utilities.
+
 
 Package: saunafs-master
 Architecture: any
