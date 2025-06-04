@@ -3,6 +3,7 @@ set -ex
 
 . ./version.sh
 OUTPUT_DIR="$(pwd)/build"
+SOURCE_DIR="$(pwd)"
 BUILD_DIRECTORY="/tmp/package-saunafs"
 PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
 
@@ -24,8 +25,6 @@ the tags on this repository to change to the version you want!"
 }
 
 : "${SNAPSHOT:=false}"
-
-PATCHES=()
 
 mkdir -p "${OUTPUT_DIR}"
 mkdir "${BUILD_DIRECTORY}"
@@ -50,8 +49,10 @@ fi
 git clone https://github.com/leil-io/saunafs/
 cd saunafs
 git checkout "${REF}"
-export GIT_COMMIT=$(git rev-parse HEAD)
-export GIT_BRANCH=$REF
+GIT_COMMIT=$(git rev-parse HEAD)
+export GIT_COMMIT
+GIT_BRANCH="$(basename "$(git name-rev "$GIT_COMMIT" | awk '{print $2}')")"
+export GIT_BRANCH
 cd ..
 
 if [ "$SNAPSHOT" = true ]; then
