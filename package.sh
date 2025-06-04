@@ -3,7 +3,6 @@ set -ex
 
 . ./version.sh
 OUTPUT_DIR="$(pwd)/build"
-SOURCE_DIR="$(pwd)"
 BUILD_DIRECTORY="/tmp/package-saunafs"
 PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
 
@@ -59,9 +58,15 @@ if [ "$SNAPSHOT" = true ]; then
 	SNAPSHOT_TS=$(date +%Y.%m.%d~%H.%M.%S)
 	SNAPSHOT_COMMIT=""
 	SNAPSHOT_BRANCH=""
-	SNAPSHOT_COMMIT="~$GIT_COMMIT"
+	SNAPSHOT_COMMIT="~${GIT_COMMIT//[!A-Za-z0-9.+~]/+}"
 	SNAPSHOT_BRANCH="~$GIT_BRANCH"
-	UPSTREAM_VERSION="${VERSION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
+	if [ "$GIT_BRANCH" = "dev" ]; then
+		# Dev branch should always be latest
+		UPSTREAM_VERSION="${VERSION}${SNAPSHOT_BRANCH}~${SNAPSHOT_TS}${SNAPSHOT_COMMIT}"
+	else
+		UPSTREAM_VERSION="${VERSION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
+	fi
+	SNAPSHOT_BRANCH="~$GIT_BRANCH"
 	DEB_VERSION="${UPSTREAM_VERSION}-${REVISION}"
 else
 	UPSTREAM_VERSION="${VERSION}"
@@ -89,12 +94,15 @@ if [ -n "$(ls -A "${PATCHES_DIRECTORY}")" ]; then
 	done
 fi
 
-git submodule update --init
-cd "vcpkg"
-./bootstrap-vcpkg.sh
-export VCPKG_ROOT="$(pwd)"
-cd ${SOURCE_DIR}
-"${VCPKG_ROOT}/vcpkg" install
+if [ -z "$VCPKG_ROOT" ]; then
+	git submodule update --init
+	cd "vcpkg"
+	./bootstrap-vcpkg.sh
+	VCPKG_ROOT="$(pwd)"
+	export VCPKG_ROOT
+	cd "${SOURCE_DIR}"
+	"${VCPKG_ROOT}/vcpkg" install
+fi
 
 if [ "$SNAPSHOT" = true ]; then
 	sed -i "1 s/(${VERSION}-${REVISION})/(${DEB_VERSION})/" debian/changelog
@@ -104,8 +112,8 @@ cat debian/changelog
 debuild \
 	--preserve-envvar=VERSION_SUFFIX \
 	--preserve-envvar=VCPKG_ROOT \
-	--set-envvar=GIT_COMMIT=$GIT_COMMIT \
-	--set-envvar=GIT_BRANCH=$GIT_BRANCH \
+	"--set-envvar=GIT_COMMIT=$GIT_COMMIT" \
+	"--set-envvar=GIT_BRANCH=$GIT_BRANCH" \
 	-us -uc
 
 
