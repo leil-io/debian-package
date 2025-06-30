@@ -98,14 +98,22 @@ cd ${SOURCE_DIR}
 
 if [ "$SNAPSHOT" = true ]; then
 	sed -i "1 s/(${VERSION}-${REVISION})/(${DEB_VERSION})/" debian/changelog
+	# TODO(Urmas): Maybe consider for non-snapshot as well?
+	export CCACHE_NOHASHDIR=true
 fi
+export CCACHE_BASEDIR=$PWD
+
 cat debian/changelog
 
 debuild \
+	--prepend-path=/usr/lib/ccache \
 	--preserve-envvar=VERSION_SUFFIX \
+	--preserve-envvar=X_VCPKG_ASSET_SOURCES \
 	--preserve-envvar=VCPKG_ROOT \
-	--set-envvar=GIT_COMMIT=$GIT_COMMIT \
-	--set-envvar=GIT_BRANCH=$GIT_BRANCH \
+	--preserve-envvar=CCACHE_NOHASHDIR \
+	--preserve-envvar=CCACHE_BASEDIR \
+	--set-envvar=GIT_COMMIT="$GIT_COMMIT" \
+	--set-envvar=GIT_BRANCH="$GIT_BRANCH" \
 	-us -uc
 
 
