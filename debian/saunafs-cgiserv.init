@@ -16,8 +16,8 @@
 NAME=saunafs-cgiserv
 EXEC=/usr/bin/python3
 DAEMON=/usr/sbin/saunafs-cgiserver
-SAUNAFSCGISERV_USER=nobody
-SAUNAFSCGISERV_GROUP=nogroup
+SAUNAFSCGISERV_USER=saunafs
+SAUNAFSCGISERV_GROUP=saunafs
 BIND_HOST=0.0.0.0
 BIND_PORT=9425
 ROOT_PATH=/usr/share/sfscgi

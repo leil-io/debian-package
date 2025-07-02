@@ -4,11 +4,11 @@
 # This is a POSIX shell fragment
 #
 
-## user to run daemon as (default: nobody)
-# SAUNAFSCGISERV_USER=nobody
+## user to run daemon as (default: saunafs)
+# SAUNAFSCGISERV_USER=saunafs
 
-## group to run daemon as (default: nogroup)
-# SAUNAFSCGISERV_GROUP=nogroup
+## group to run daemon as (default: saunafs)
+# SAUNAFSCGISERV_GROUP=saunafs
 
 ## local address to listen on (default: any)
 # BIND_HOST=localhost

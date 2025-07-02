@@ -10,7 +10,7 @@ Environment=ROOT_PATH=/usr/share/sfscgi
 EnvironmentFile=-/etc/default/%p
 ExecStart=/usr/sbin/saunafs-cgiserver -H ${BIND_HOST} -P ${BIND_PORT} -R ${ROOT_PATH}
 Restart=on-abort
-User=nobody
+User=saunafs
 
 [Install]
 WantedBy=multi-user.target
