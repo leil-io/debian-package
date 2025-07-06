@@ -55,12 +55,6 @@ Rules-Requires-Root: no
 Standards-Version: 3.9.3
 Homepage: https://saunafs.org/
 
-Package: saunafs-dbg
-Architecture: any
-Section: debug
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Debugging symbols for SaunaFS
- Debugging symbols for all SaunaFS binaries
 
 Package: saunafs-common
 Architecture: any

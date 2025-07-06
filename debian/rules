@@ -14,7 +14,7 @@ export GIT_BRANCH ?= Unknown
 override_dh_auto_configure:
 	dh_auto_configure --                               \
         -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_ROOT)"/scripts/buildsystems/vcpkg.cmake"                            \
-	-DCMAKE_BUILD_TYPE=Release                         \
+	-DCMAKE_BUILD_TYPE=Debug                         \
 	-DENABLE_TESTS=NO                                  \
 	-DCMAKE_INSTALL_PREFIX=/                           \
 	-DENABLE_DOCS=YES                                  \
@@ -34,7 +34,7 @@ override_dh_auto_configure:
 # 	dh_gencontrol -- $(if $(version),-v$(version),)
 
 override_dh_strip:
-	dh_strip --dbg-package=saunafs-dbg
+
 
 override_dh_installinit:
 	dh_installinit --no-start
