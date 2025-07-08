@@ -63,6 +63,11 @@ if [ "$SNAPSHOT" = true ]; then
 	SNAPSHOT_BRANCH="~$GIT_BRANCH"
 	UPSTREAM_VERSION="${VERSION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
 	DEB_VERSION="${UPSTREAM_VERSION}-${REVISION}"
+	# Disable git commit/branch inclusion, speeds up compilation
+	GIT_COMMIT="N/A due to snapshot, see deb package name"
+	GIT_BRANCH="N/A due to snapshot, see deb package name"
+	export GIT_COMMIT
+	export GIT_BRANCH
 else
 	UPSTREAM_VERSION="${VERSION}"
 	DEB_VERSION="${VERSION}-${REVISION}"
