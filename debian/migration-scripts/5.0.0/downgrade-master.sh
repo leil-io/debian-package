@@ -52,10 +52,10 @@ done
 
 # Global variables to store installation status and active status
 # Anything other than 0 means not installed
-IS_MASTER_INSTALLED=0
-IS_METALOGGER_INSTALLED=0
-IS_URAFT_INSTALLED=0
-IS_CHUNKSERVER_INSTALLED=0
+IS_MASTER_INSTALLED=1
+IS_METALOGGER_INSTALLED=1
+IS_URAFT_INSTALLED=1
+IS_CHUNKSERVER_INSTALLED=1
 
 MASTER_CURRENT_VERSION="unknown"
 METALOGGER_CURRENT_VERSION="unknown"
@@ -92,30 +92,26 @@ check_package_version_in_apt() {
 
 check_installed_packages() {
 	# Check saunafs-master
-	dpkg -s saunafs-master &>/dev/null
-	IS_MASTER_INSTALLED=$?
-	if [ "$IS_MASTER_INSTALLED" -eq 0 ]; then
+	if dpkg -s saunafs-master &>/dev/null; then
+		IS_MASTER_INSTALLED=0
 		MASTER_CURRENT_VERSION=$(dpkg -s saunafs-master | grep Version | awk '{print $2}')
 	fi
 
 	# Check saunafs-metalogger
-	dpkg -s saunafs-metalogger &>/dev/null
-	IS_METALOGGER_INSTALLED=$?
-	if [ "$IS_METALOGGER_INSTALLED" -eq 0 ]; then
+	if dpkg -s saunafs-metalogger &>/dev/null; then
+		IS_METALOGGER_INSTALLED=0
 		METALOGGER_CURRENT_VERSION=$(dpkg -s saunafs-metalogger | grep Version | awk '{print $2}')
 	fi
 
 	# Check saunafs-uraft
-	dpkg -s saunafs-uraft &>/dev/null
-	IS_URAFT_INSTALLED=$?
-	if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
+	if dpkg -s saunafs-uraft &>/dev/null; then
+		IS_URAFT_INSTALLED=0
 		URAFT_CURRENT_VERSION=$(dpkg -s saunafs-uraft | grep Version | awk '{print $2}')
 	fi
 
 	# Check saunafs-chunkserver
-	dpkg -s saunafs-chunkserver &>/dev/null
-	IS_CHUNKSERVER_INSTALLED=$?
-	if [ "$IS_CHUNKSERVER_INSTALLED" -eq 0 ]; then
+	if dpkg -s saunafs-chunkserver &>/dev/null; then
+		IS_CHUNKSERVER_INSTALLED=0
 		CHUNKSERVER_CURRENT_VERSION=$(dpkg -s saunafs-chunkserver | grep Version | awk '{print $2}')
 	fi
 
