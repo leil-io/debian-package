@@ -51,11 +51,11 @@ while getopts "d:" opt; do
 done
 
 # Global variables to store installation status and active status
-# Anything other than 0 means not installed
-IS_MASTER_INSTALLED=1
-IS_METALOGGER_INSTALLED=1
-IS_URAFT_INSTALLED=1
-IS_CHUNKSERVER_INSTALLED=1
+# Anything other than 1 means not installed
+IS_MASTER_INSTALLED=0
+IS_METALOGGER_INSTALLED=0
+IS_URAFT_INSTALLED=0
+IS_CHUNKSERVER_INSTALLED=0
 
 MASTER_CURRENT_VERSION="unknown"
 METALOGGER_CURRENT_VERSION="unknown"
@@ -64,7 +64,6 @@ CHUNKSERVER_CURRENT_VERSION="unknown"
 
 WAS_MASTER_ACTIVE=0
 WAS_METALOGGER_ACTIVE=0
-WAS_URAFT_ACTIVE=0
 
 # Logging is now handled by the migration script itself
 log_message() {
@@ -90,55 +89,45 @@ check_package_version_in_apt() {
 	fi
 }
 
+is_package_installed() {
+	local package_name=$1
+	if dpkg-query -Wf'${db:Status-abbrev}' "$package_name" 2>/dev/null | grep -q '^i'; then
+		return 0;
+	else
+		return 1;
+	fi
+}
+
 check_installed_packages() {
-	# Check saunafs-master
-	if dpkg -s saunafs-master &>/dev/null; then
-		IS_MASTER_INSTALLED=0
+	if is_package_installed saunafs-master; then
+		IS_MASTER_INSTALLED=1
 		MASTER_CURRENT_VERSION=$(dpkg -s saunafs-master | grep Version | awk '{print $2}')
 	fi
 
-	# Check saunafs-metalogger
-	if dpkg -s saunafs-metalogger &>/dev/null; then
-		IS_METALOGGER_INSTALLED=0
+	if is_package_installed saunafs-metalogger; then
+		IS_METALOGGER_INSTALLED=1
 		METALOGGER_CURRENT_VERSION=$(dpkg -s saunafs-metalogger | grep Version | awk '{print $2}')
 	fi
 
-	# Check saunafs-uraft
-	if dpkg -s saunafs-uraft &>/dev/null; then
-		IS_URAFT_INSTALLED=0
+	if is_package_installed saunafs-uraft; then
+		IS_URAFT_INSTALLED=1
 		URAFT_CURRENT_VERSION=$(dpkg -s saunafs-uraft | grep Version | awk '{print $2}')
 	fi
 
-	# Check saunafs-chunkserver
-	if dpkg -s saunafs-chunkserver &>/dev/null; then
-		IS_CHUNKSERVER_INSTALLED=0
+	if is_package_installed saunafs-chunkserver; then
+		IS_CHUNKSERVER_INSTALLED=1
 		CHUNKSERVER_CURRENT_VERSION=$(dpkg -s saunafs-chunkserver | grep Version | awk '{print $2}')
 	fi
 
-	if [ "$IS_MASTER_INSTALLED" -ne 0 ] && [ "$IS_METALOGGER_INSTALLED" -ne 0 ] && [ "$IS_URAFT_INSTALLED" -ne 0 ]; then
-		log_message "Neither saunafs-master, saunafs-metalogger nor saunafs-uraft packages are installed. Exiting."
+	if [ "$IS_MASTER_INSTALLED" -ne 0 ] && [ "$IS_METALOGGER_INSTALLED" -ne 0 ]; then
+		log_message "Neither saunafs-master nor saunafs-metalogger package is installed. Exiting."
 		exit 1
 	fi
 }
 
 stop_master_server() {
-	if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
-		if systemctl is-active --quiet saunafs-uraft; then
-			log_message "saunafs-uraft is active. Stopping saunafs-uraft instead of saunafs-master..."
-			if systemctl stop saunafs-uraft; then
-				log_message "saunafs-uraft stop command executed successfully"
-				WAS_URAFT_ACTIVE=1
-			else
-				log_message "saunafs-uraft stop command executed with errors"
-				exit 1
-			fi
-		else
-			log_message "saunafs-uraft is installed but not active, skipping stop."
-		fi
-	fi
-
 	# If uraft was not handled, or not installed, try to stop master
-	if [ "$WAS_URAFT_ACTIVE" -eq 0 ] && [ "$IS_MASTER_INSTALLED" -eq 0 ]; then
+	if [ "$IS_MASTER_INSTALLED" -eq 1 ]; then
 		if systemctl is-active --quiet saunafs-master; then
 			log_message "Stopping master server..."
 			if systemctl stop saunafs-master; then
@@ -151,15 +140,13 @@ stop_master_server() {
 		else
 			log_message "Master server is already stopped, skipping stop."
 		fi
-	elif [ "$WAS_URAFT_ACTIVE" -eq 1 ]; then
-		log_message "saunafs-master stop skipped as saunafs-uraft was stopped."
 	else
 		log_message "saunafs-master not installed, skipping stop."
 	fi
 }
 
 stop_metalogger_server() {
-	if [ "$IS_METALOGGER_INSTALLED" -eq 0 ]; then
+	if [ "$IS_METALOGGER_INSTALLED" -eq 1 ]; then
 		if systemctl is-active --quiet saunafs-metalogger; then
 			log_message "Stopping metalogger server..."
 			if systemctl stop saunafs-metalogger; then
@@ -189,7 +176,7 @@ run_data_migration() {
 }
 
 downgrade_master_package() {
-	if [ "$IS_MASTER_INSTALLED" -eq 0 ]; then
+	if [ "$IS_MASTER_INSTALLED" -eq 1 ]; then
 		log_message "Downgrading master server package to version ${TARGET_VERSION}..."
 		if apt install saunafs-master=${TARGET_VERSION} --yes --allow-downgrades; then
 			log_message "Master package downgrade command executed successfully"
@@ -204,7 +191,7 @@ downgrade_master_package() {
 }
 
 downgrade_metalogger_package() {
-	if [ "$IS_METALOGGER_INSTALLED" -eq 0 ]; then
+	if [ "$IS_METALOGGER_INSTALLED" -eq 1 ]; then
 		log_message "Downgrading metalogger server package to version ${TARGET_VERSION}..."
 		if apt install saunafs-metalogger=${TARGET_VERSION} --yes --allow-downgrades; then
 			log_message "Metalogger package downgrade command executed successfully"
@@ -219,7 +206,7 @@ downgrade_metalogger_package() {
 }
 
 downgrade_uraft_package() {
-	if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
+	if [ "$IS_URAFT_INSTALLED" -eq 1 ]; then
 		log_message "Downgrading uraft server package to version ${TARGET_VERSION}..."
 		if apt install saunafs-uraft=${TARGET_VERSION} --yes --allow-downgrades; then
 			log_message "Uraft package downgrade command executed successfully"
@@ -234,15 +221,7 @@ downgrade_uraft_package() {
 }
 
 start_master_server() {
-	if [ "$WAS_URAFT_ACTIVE" -eq 1 ]; then
-		log_message "Starting saunafs-uraft..."
-		if systemctl start saunafs-uraft; then
-			log_message "saunafs-uraft start command executed successfully"
-		else
-			log_message "saunafs-uraft start command executed with errors"
-			exit 1
-		fi
-	elif [ "$WAS_MASTER_ACTIVE" -eq 1 ]; then
+	if [ "$WAS_MASTER_ACTIVE" -eq 1 ]; then
 		log_message "Starting master server..."
 		if systemctl start saunafs-master; then
 			log_message "Master start command executed successfully"
@@ -251,7 +230,7 @@ start_master_server() {
 			exit 1
 		fi
 	else
-		log_message "Neither saunafs-master nor saunafs-uraft were active, skipping start."
+		log_message "saunafs-master was not active, skipping start."
 	fi
 }
 
@@ -273,41 +252,45 @@ apt update
 check_installed_packages
 
 # Verify TARGET_VERSION exists in apt for relevant packages
-if [ "$IS_MASTER_INSTALLED" -eq 0 ]; then
+if [ "$IS_MASTER_INSTALLED" -eq 1 ]; then
 	if ! check_package_version_in_apt "saunafs-master" "${TARGET_VERSION}"; then
 		exit 1
 	fi
 fi
 
-if [ "$IS_METALOGGER_INSTALLED" -eq 0 ]; then
+if [ "$IS_METALOGGER_INSTALLED" -eq 1 ]; then
 	if ! check_package_version_in_apt "saunafs-metalogger" "${TARGET_VERSION}"; then
 		exit 1
 	fi
 fi
 
-if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
+if [ "$IS_URAFT_INSTALLED" -eq 1 ]; then
+	if systemctl is-active --quiet saunafs-uraft; then
+		log_message "saunafs-uraft is active. You must manually stop uraft and make sure master is stopped as well."
+		exit 1
+	fi
 	if ! check_package_version_in_apt "saunafs-uraft" "${TARGET_VERSION}"; then
 		exit 1
 	fi
 fi
 
 # Check chunkserver version and prevent downgrade if 5.0.0 or later
-if [ "$IS_CHUNKSERVER_INSTALLED" -eq 0 ]; then
+if [ "$IS_CHUNKSERVER_INSTALLED" -eq 1 ]; then
 	if version_gt "${CHUNKSERVER_CURRENT_VERSION}" "$TARGET_VERSION"; then
 		log_message "saunafs-chunkserver version ${CHUNKSERVER_CURRENT_VERSION} is not $TARGET_VERSION or earlier. This script is not intended for downgrading chunkserver. Exiting."
 		exit 1
 	fi
 fi
 
-if [ "$IS_MASTER_INSTALLED" -eq 0 ] && ! [ "$IS_URAFT_INSTALLED" -eq 0 ] ; then
+if [ "$IS_MASTER_INSTALLED" -eq 1 ] && ! [ "$IS_URAFT_INSTALLED" -eq 1 ] ; then
 	log_message "Downgrading master from version ${MASTER_CURRENT_VERSION} to ${TARGET_VERSION}"
 fi
 
-if [ "$IS_METALOGGER_INSTALLED" -eq 0 ]; then
+if [ "$IS_METALOGGER_INSTALLED" -eq 1 ]; then
 	log_message "Downgrading metalogger from version ${METALOGGER_CURRENT_VERSION} to ${TARGET_VERSION}"
 fi
 
-if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
+if [ "$IS_URAFT_INSTALLED" -eq 1 ]; then
 	log_message "Downgrading uraft from version ${URAFT_CURRENT_VERSION} to ${TARGET_VERSION}"
 fi
 
