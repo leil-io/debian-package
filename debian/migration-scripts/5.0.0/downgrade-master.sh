@@ -119,8 +119,8 @@ check_installed_packages() {
 		CHUNKSERVER_CURRENT_VERSION=$(dpkg -s saunafs-chunkserver | grep Version | awk '{print $2}')
 	fi
 
-	if [ "$IS_MASTER_INSTALLED" -ne 0 ] && [ "$IS_METALOGGER_INSTALLED" -ne 0 ] && [ "$IS_URAFT_INSTALLED" -ne 0 ] && [ "$IS_CHUNKSERVER_INSTALLED" -ne 0 ]; then
-		log_message "Neither saunafs-master, saunafs-metalogger, saunafs-uraft, nor saunafs-chunkserver packages are installed. Exiting."
+	if [ "$IS_MASTER_INSTALLED" -ne 0 ] && [ "$IS_METALOGGER_INSTALLED" -ne 0 ] && [ "$IS_URAFT_INSTALLED" -ne 0 ]; then
+		log_message "Neither saunafs-master, saunafs-metalogger nor saunafs-uraft packages are installed. Exiting."
 		exit 1
 	fi
 }
@@ -274,6 +274,7 @@ start_metalogger_server() {
 }
 
 apt update
+check_installed_packages
 
 # Verify TARGET_VERSION exists in apt for relevant packages
 if [ "$IS_MASTER_INSTALLED" -eq 0 ]; then
@@ -294,8 +295,6 @@ if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
 	fi
 fi
 
-check_installed_packages
-
 # Check chunkserver version and prevent downgrade if 5.0.0 or later
 if [ "$IS_CHUNKSERVER_INSTALLED" -eq 0 ]; then
 	if version_gt "${CHUNKSERVER_CURRENT_VERSION}" "$TARGET_VERSION"; then
@@ -313,7 +312,7 @@ if [ "$IS_METALOGGER_INSTALLED" -eq 0 ]; then
 fi
 
 if [ "$IS_URAFT_INSTALLED" -eq 0 ]; then
-	log_message "Downgrading uraft from from version ${URAFT_CURRENT_VERSION} to ${TARGET_VERSION}"
+	log_message "Downgrading uraft from version ${URAFT_CURRENT_VERSION} to ${TARGET_VERSION}"
 fi
 
 stop_master_server
