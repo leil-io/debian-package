@@ -1,3 +1,9 @@
+saunafs (5.0.1-2) stable; urgency=medium
+
+  * Fix wrong version number in -v and CGI
+
+ -- Saunafs Team <support@saunafs.com>  Sat, 12 Jul 2025 11:34:09 +0300
+
 saunafs (5.0.1-1) stable; urgency=medium
 
   * Fix critical issue with newer client causing data corruption with older
