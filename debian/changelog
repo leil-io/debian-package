@@ -1,3 +1,10 @@
+saunafs (5.0.1-1) stable; urgency=medium
+
+  * Fix critical issue with newer client causing data corruption with older
+    one.
+
+ -- Saunafs Team <support@saunafs.com>  Sat, 12 Jul 2025 10:15:40 +0300
+
 saunafs (5.0.0-1) stable; urgency=medium
 
   * Update SaunaFS version
