@@ -5,6 +5,8 @@ After=network-online.target network.target
 
 [Service]
 Type=forking
+User=saunafs
+Group=saunafs
 ExecStart=/usr/sbin/sfsmetalogger start
 ExecStop=/usr/sbin/sfsmetalogger stop
 ExecReload=/usr/sbin/sfsmetalogger reload

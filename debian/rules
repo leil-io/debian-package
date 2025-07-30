@@ -8,8 +8,7 @@ export VERSION_SUFFIX ?= -unofficial
 export GIT_COMMIT ?= Unknown
 export GIT_BRANCH ?= Unknown
 
-.PHONY: override_dh_strip override_dh_auto_configure override_dh_installsystemd override_dh_installinit
-
+.PHONY: override_dh_strip override_dh_auto_configure override_dh_installsystemd
 
 override_dh_auto_configure:
 	dh_auto_configure --                               \
@@ -36,13 +35,8 @@ override_dh_auto_configure:
 override_dh_strip:
 	dh_strip --dbg-package=saunafs-dbg
 
-override_dh_installinit:
-	dh_installinit --no-start
-	dh_installinit --no-start -psaunafs-uraft --name=saunafs-ha-master
-
 override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-start
-	dh_installsystemd --no-enable --no-start -psaunafs-uraft --name=saunafs-ha-master
 
 %:
 	dh $@ --buildsystem=cmake

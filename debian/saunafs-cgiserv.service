@@ -4,13 +4,14 @@ Documentation=man:saunafs-cgiserver
 After=network-online.target network.target
 
 [Service]
+User=saunafs
+Group=saunafs
 Environment=BIND_HOST=0.0.0.0
 Environment=BIND_PORT=9425
 Environment=ROOT_PATH=/usr/share/sfscgi
 EnvironmentFile=-/etc/default/%p
 ExecStart=/usr/sbin/saunafs-cgiserver -H ${BIND_HOST} -P ${BIND_PORT} -R ${ROOT_PATH}
 Restart=on-abort
-User=saunafs
 
 [Install]
 WantedBy=multi-user.target
