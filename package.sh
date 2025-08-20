@@ -62,7 +62,7 @@ if [ "$SNAPSHOT" = true ]; then
 	SNAPSHOT_COMMIT="~$GIT_COMMIT"
 	SNAPSHOT_BRANCH="~$GIT_BRANCH"
 	UPSTREAM_VERSION="${VERSION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
-	DEB_VERSION="${UPSTREAM_VERSION}-${REVISION}"
+	DEB_VERSION="${VERSION}-${REVISION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
 	# Disable git commit/branch inclusion, speeds up compilation
 	GIT_COMMIT="N/A due to snapshot, see deb package name"
 	GIT_BRANCH="N/A due to snapshot, see deb package name"
