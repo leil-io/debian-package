@@ -16,6 +16,12 @@ saunafs (5.1.0~rc1-1) stable; urgency=medium
 
  -- Saunafs Team <support@saunafs.com>  Wed, 30 Jul 2025 14:18:33 +0200
 
+saunafs (5.0.3-1) stable; urgency=medium
+
+  * Fix saunafs-uraft-helper requiring URAFT_ELECTOR_MODE
+
+ -- Saunafs Team <support@saunafs.com>  Thu, 21 Aug 2025 14:08:51 +0300
+
 saunafs (5.0.2-1) stable; urgency=medium
 
   * Fix issue with new chunkserver unable to connect to older master
