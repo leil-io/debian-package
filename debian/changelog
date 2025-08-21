@@ -1,3 +1,9 @@
+saunafs (5.0.3-1) stable; urgency=medium
+
+  * saunafs-uraft-helper no longer requires URAFT_ELECTOR_MODE to be set.
+
+ -- Saunafs Team <support@saunafs.com>  Thu, 21 Aug 2025 14:08:51 +0300
+
 saunafs (5.0.2-1) stable; urgency=medium
 
   * Fix issue with new chunkserver unable to connect to older master
