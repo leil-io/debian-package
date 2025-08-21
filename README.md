@@ -10,3 +10,5 @@ distributions and versions are welcome, but these are not supported by Leil.
 *ANOTHER NOTE*: The package.sh may not work correctly. This is because the dev
 branch is tracking leil-io/saunafs dev branch. If you want to build a stable
 package, see the branches and/or tags.
+
+EVIL TEXT!
