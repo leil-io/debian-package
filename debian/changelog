@@ -1,5 +1,9 @@
 saunafs (5.1.1-1) stable; urgency=medium
 
+  * Fix: Deprecate support for legacy SysVinit script
+
+saunafs (5.1.1-1) stable; urgency=medium
+
   * saunafs-uraft-helper no longer requires URAFT_ELECTOR_MODE to be set.
 
  -- Saunafs Team <support@saunafs.com>  Thu, 21 Aug 2025 14:21:46 +0300
