@@ -1,3 +1,9 @@
+saunafs (5.2.0~rc1-1) stable; urgency=medium
+
+  * Update SaunaFS version
+
+ -- Saunafs Team <support@saunafs.com>  Mon, 01 Sep 2025 17:04:05 +0000
+
 saunafs (5.1.2-1) stable; urgency=medium
 
   * Revert chunkserver multiple HDD writes per block
