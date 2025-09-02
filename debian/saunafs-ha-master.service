@@ -5,13 +5,11 @@ PartOf=saunafs-uraft.service
 
 [Service]
 Type=forking
-User=saunafs
-Group=saunafs
+TimeoutSec=0
 ExecStart=/usr/sbin/saunafs-uraft-helper start-saunafs-ha-master
 ExecStop=/usr/sbin/saunafs-uraft-helper stop-saunafs-ha-master
 ExecReload=/usr/sbin/saunafs-uraft-helper reload-saunafs-ha-master
 Restart=no
-TimeoutSec=0
 
 [Install]
 WantedBy=multi-user.target

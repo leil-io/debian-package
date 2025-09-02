@@ -5,11 +5,8 @@ After=network-online.target network.target
 
 [Service]
 Type=forking
-User=saunafs
-Group=saunafs
-Environment=CONFIG_FILE=/etc/saunafs/sfsmaster.cfg
 TimeoutSec=0
-ExecStart=/usr/sbin/sfsmaster start -c ${CONFIG_FILE}
+ExecStart=/usr/sbin/sfsmaster start
 ExecStop=/usr/sbin/sfsmaster stop
 ExecReload=/usr/sbin/sfsmaster reload
 Restart=no
