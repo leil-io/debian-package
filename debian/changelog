@@ -1,3 +1,9 @@
+saunafs (5.1.2-2) stable; urgency=medium
+
+  * Revert SysVinit removal
+
+ -- Saunafs Team <support@saunafs.com>  Wed, 03 Sep 2025 11:17:25 +0300
+
 saunafs (5.1.2-1) stable; urgency=medium
 
   * Revert chunkserver multiple HDD writes per block
