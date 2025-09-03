@@ -5,14 +5,11 @@ After=network-online.target network.target
 
 [Service]
 Type=forking
-User=saunafs
-Group=saunafs
-Environment=CONFIG_FILE=/etc/saunafs/sfschunkserver.cfg
-ExecStart=/usr/sbin/sfschunkserver start -c ${CONFIG_FILE}
+TimeoutSec=0
+ExecStart=/usr/sbin/sfschunkserver start
 ExecStop=/usr/sbin/sfschunkserver stop
 ExecReload=/usr/sbin/sfschunkserver reload
 Restart=on-abort
-TimeoutSec=0
 
 [Install]
 WantedBy=multi-user.target

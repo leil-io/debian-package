@@ -2,44 +2,55 @@ Source: saunafs
 Section: admin
 Priority: extra
 Maintainer: SaunaFS <contact@saunafs.com>
+Build-Depends: asciidoc (>= 8.6.6),
 # Probably half the packages are not needed, but we need a thorough review of
 # this
-Build-Depends: asciidoc (>= 8.6.6),
-	       debhelper (>= 13),
-	       cmake (>= 2.8),
-	       libfuse3-dev,
-	       pkg-config,
-	       zlib1g-dev,
-	       libspdlog-dev,
-	       libfmt-dev,
-	       libjudy-dev,
-	       libboost-system-dev,
-	       libboost-program-options-dev,
-	       libboost-filesystem-dev,
-	       python3,
-	       libyaml-cpp-dev,
+               debhelper (>= 9),
+               cmake (>= 2.8),
+               libfuse3-dev,
+               pkg-config,
+               zlib1g-dev,
+               libspdlog-dev,
+               libfmt-dev,
+               libjudy-dev,
+               libboost-system-dev,
+               libboost-program-options-dev,
+               libboost-filesystem-dev,
+               python3,
+               libyaml-cpp-dev,
 	       liburcu-dev,
 	       libblkid-dev,
+	       libboost-filesystem-dev,
 	       libboost-iostreams-dev,
+	       libboost-program-options-dev,
+	       libboost-system-dev,
 	       libcrcutil-dev,
 	       libdb-dev,
+	       libfmt-dev,
+	       libfuse3-dev,
 	       libgoogle-perftools-dev,
 	       libgtest-dev,
 	       libisal-dev,
 	       libpam0g-dev,
+	       libspdlog-dev,
 	       libsystemd-dev,
 	       libthrift-dev,
 	       libtirpc-dev,
+	       liburcu-dev,
+	       libyaml-cpp-dev,
 	       uuid-dev,
+	       zlib1g-dev,
+	       libacl1-dev,
 	       libcap-dev,
 	       libdbus-1-dev,
 	       libacl1-dev,
+	       libcap-dev,
+	       libdbus-1-dev,
 	       libjemalloc-dev,
 	       libkrb5-dev,
 	       libnfsidmap-dev,
 	       libnsl-dev,
 	       libsqlite3-dev,
-	       systemd
 Rules-Requires-Root: no
 Standards-Version: 3.9.3
 Homepage: https://saunafs.org/
@@ -64,19 +75,19 @@ Description: SaunaFS common files
 
 Package: saunafs-master
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common, systemd
+Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common
 Description: SaunaFS master server
  SaunaFS master (metadata) server.
 
 Package: saunafs-metalogger
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common, systemd
+Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common
 Description: SaunaFS metalogger server
  SaunaFS metalogger (metadata replication) server.
 
 Package: saunafs-chunkserver
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common, systemd
+Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common
 Description: SaunaFS data server
  SaunaFS data server.
 
@@ -114,7 +125,7 @@ Description: SaunaFS CGI Monitor
 Package: saunafs-cgiserv
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-cgi,
-         python3, systemd
+         python3
 Description: Simple CGI-capable HTTP server to run SaunaFS CGI Monitor
  Simple CGI-capable HTTP server to run SaunaFS CGI Monitor.
 
@@ -124,9 +135,7 @@ Depends: saunafs-master,
          saunafs-adm,
          iputils-arping,
          sudo,
-         systemd,
          ${shlibs:Depends},
-         ${misc:Depends}
 Description: SaunaFS cluster management tool
  SaunaFS is a distributed filesystem.
  .
