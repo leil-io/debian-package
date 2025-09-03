@@ -1,9 +1,14 @@
 saunafs (5.2.0~rc1-1) stable; urgency=medium
 
   * Update SaunaFS version
-  * Revert the sysvinit removal
 
  -- Saunafs Team <support@saunafs.com>  Mon, 01 Sep 2025 17:06:29 +0000
+
+saunafs (5.1.2-2) stable; urgency=medium
+
+  * Revert SysVinit removal
+
+ -- Saunafs Team <support@saunafs.com>  Wed, 03 Sep 2025 11:17:25 +0300
 
 saunafs (5.1.2-1) stable; urgency=medium
 
