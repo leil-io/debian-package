@@ -1,0 +1,38 @@
+name: Validate Deployment
+
+on:
+  pull_request:
+  push:
+    branches: [dev, validate-deployment]
+
+jobs:
+  trigger-molecule-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Determine repository URLs
+        id: repo-urls
+        run: |
+          # Set repository URLs based on branch or environment
+          if [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "repo_url_noble=https://repo.saunafs.com/repository/saunafs-ubuntu-24.04-staging/" >> $GITHUB_OUTPUT
+            echo "repo_url_jammy=https://repo.saunafs.com/repository/saunafs-ubuntu-22.04-staging/" >> $GITHUB_OUTPUT
+          else
+            echo "repo_url_noble=https://repo.saunafs.com/repository/saunafs-ubuntu-24.04-experimental/" >> $GITHUB_OUTPUT
+            echo "repo_url_jammy=https://repo.saunafs.com/repository/saunafs-ubuntu-22.04-experimental/" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger deployment validation
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DEPLOYMENT_REPO_TOKEN }}
+          repository: leil-io/deployment
+          event-type: validate-package
+          client-payload: |
+            {
+              "package_version": "5.2.0",
+              "package_branch": "${{ github.ref_name }}",
+              "source_repo": "${{ github.repository }}",
+              "source_sha": "${{ github.sha }}",
+              "repo_url_noble": "${{ steps.repo-urls.outputs.repo_url_noble }}",
+              "repo_url_jammy": "${{ steps.repo-urls.outputs.repo_url_jammy }}"
+            }
