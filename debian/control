@@ -2,10 +2,9 @@ Source: saunafs
 Section: admin
 Priority: extra
 Maintainer: SaunaFS <contact@saunafs.com>
-Build-Depends: asciidoc (>= 8.6.6),
+Build-Depends: debhelper (>= 9),
 # Probably half the packages are not needed, but we need a thorough review of
 # this
-               debhelper (>= 9),
                cmake (>= 2.8),
                libfuse3-dev,
                pkg-config,
