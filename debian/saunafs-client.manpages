@@ -9,11 +9,7 @@ usr/share/man/man1/saunafs-getgoal.1
 usr/share/man/man1/saunafs-gettrashtime.1
 usr/share/man/man1/saunafs-makesnapshot.1
 usr/share/man/man1/saunafs-repquota.1
-usr/share/man/man1/saunafs-rgetgoal.1
-usr/share/man/man1/saunafs-rgettrashtime.1
 usr/share/man/man1/saunafs-rremove.1
-usr/share/man/man1/saunafs-rsetgoal.1
-usr/share/man/man1/saunafs-rsettrashtime.1
 usr/share/man/man1/saunafs-seteattr.1
 usr/share/man/man1/saunafs-setgoal.1
 usr/share/man/man1/saunafs-setquota.1

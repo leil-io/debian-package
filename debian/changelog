@@ -1,3 +1,10 @@
+saunafs (5.5.0~rc1-2) stable; urgency=medium
+
+  * Drop removed man pages: saunafs-rgetgoal, saunafs-rgettrashtime,
+    saunafs-rsetgoal, saunafs-rsettrashtime.
+
+ -- Saunafs Team <support@saunafs.com>  Wed, 03 Dec 2025 10:34:11 +0200
+
 saunafs (5.5.0~rc1-1) stable; urgency=medium
 
   * Update SaunaFS version
