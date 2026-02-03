@@ -9,6 +9,14 @@ PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
 
 rm -rf ${BUILD_DIRECTORY:?}
 
+sanitize_deb_version_component() {
+	# Debian version components may only contain: [0-9A-Za-z.+:~\-]
+	# Replace everything else (including '/', '_', '^', whitespace) with '.'
+	local value="${1:-}"
+	value="$(echo "$value" | sed -E 's/[^0-9A-Za-z.+:~\-]+/./g; s/\.+/./g; s/^\.+//; s/\.+$//')"
+	echo "$value"
+}
+
 print_help() {
 	echo "
 This helper script allows quickly building saunafs debian
@@ -35,9 +43,13 @@ if [[ -n $PATCH ]]; then
 fi
 
 if [ -n "$PATCHES_DIR" ]; then
-	for patch in $PATCHES_DIR; do
-		cp "${patch}" "${PATCHES_DIRECTORY}"
+	shopt -s nullglob
+	for patch in "${PATCHES_DIR}"/*; do
+		if [[ -f "$patch" ]]; then
+			cp "$patch" "${PATCHES_DIRECTORY}"
+		fi
 	done
+	shopt -u nullglob
 fi
 cp -r debian "${BUILD_DIRECTORY}"
 cd "${BUILD_DIRECTORY}"
@@ -52,6 +64,7 @@ git checkout "${REF}"
 GIT_COMMIT=$(git rev-parse HEAD)
 export GIT_COMMIT
 GIT_BRANCH="$(basename "$(git name-rev "$GIT_COMMIT" | awk '{print $2}')")"
+GIT_BRANCH="$(sanitize_deb_version_component "$GIT_BRANCH")"
 export GIT_BRANCH
 cd ..
 
@@ -60,7 +73,7 @@ if [ "$SNAPSHOT" = true ]; then
 	SNAPSHOT_COMMIT=""
 	SNAPSHOT_BRANCH=""
 	SNAPSHOT_COMMIT="~$GIT_COMMIT"
-	SNAPSHOT_BRANCH="~$GIT_BRANCH"
+	SNAPSHOT_BRANCH="~$(sanitize_deb_version_component "$GIT_BRANCH")"
 	UPSTREAM_VERSION="${VERSION}~${SNAPSHOT_TS}${SNAPSHOT_BRANCH}${SNAPSHOT_COMMIT}"
 	DEB_VERSION="${UPSTREAM_VERSION}-${REVISION}"
 	# Disable git commit/branch inclusion, speeds up compilation
