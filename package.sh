@@ -47,6 +47,9 @@ if [ -z "$REF" ]; then
 fi
 
 git clone https://github.com/leil-io/saunafs/
+# install FoundationDB dependencies
+sudo apt update && sudo apt install -y wget
+sudo "./saunafs/tests/ci_build/install-foundationdb.sh"
 cd saunafs
 git checkout "${REF}"
 GIT_COMMIT=$(git rev-parse HEAD)
