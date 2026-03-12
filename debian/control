@@ -124,7 +124,8 @@ Description: SaunaFS CGI Monitor
 Package: saunafs-cgiserv
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-cgi,
-         python3
+         python3,
+         python3-chardet
 Description: Simple CGI-capable HTTP server to run SaunaFS CGI Monitor
  Simple CGI-capable HTTP server to run SaunaFS CGI Monitor.
 
