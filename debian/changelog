@@ -1,3 +1,9 @@
+saunafs (5.8.0~rc2-2) stable; urgency=medium
+
+  * Add missing dependency for saunafs-cgiserv (python3-chardet)
+
+ -- Saunafs Team <support@saunafs.com>  Thu, 12 Mar 2026 13:26:04 +0100
+
 saunafs (5.8.0~rc2-1) stable; urgency=medium
 
   * Update SaunaFS version
