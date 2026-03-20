@@ -73,6 +73,7 @@ pipeline {
                 )
             }
         }
+
         stage('Build, Package, and Deploy') {
             matrix {
                 axes {
@@ -81,11 +82,10 @@ pipeline {
                         values 'ubuntu-22.04', 'ubuntu-24.04'
                     }
                 }
-                agent {
-                    label "build-agent-${DISTRIBUTION}"
-                }
+
                 stages {
-                    stage('Build, deploy and test') {
+                    stage('Build and Deploy') {
+                        agent { label "build-agent-${DISTRIBUTION}" }
                         stages {
                             stage('Checkout and Build') {
                                 steps {
@@ -101,12 +101,23 @@ pipeline {
                                             echo "Checking out normally"
                                             checkout scm
                                         }
+
                                         sh './package.sh'
                                         sh "mkdir -p ${DISTRIBUTION}"
                                         sh "mv build/* ${DISTRIBUTION}"
+
+                                        def deb = sh(
+                                            script: "ls -t ${DISTRIBUTION}/saunafs-*.deb | head -1",
+                                            returnStdout: true
+                                        ).trim()
+                                        def version = getVersionFromDebFilename(deb)
+
+                                        writeFile file: "${DISTRIBUTION}/package-version.txt", text: version
+                                        stash name: "package-metadata-${DISTRIBUTION}", includes: "${DISTRIBUTION}/package-version.txt"
                                     }
                                 }
                             }
+
                             stage('Archive for Manual Download') {
                                 steps {
                                     archiveArtifacts(artifacts:
@@ -116,6 +127,7 @@ pipeline {
                                     )
                                 }
                             }
+
                             stage('Deploy') {
                                 environment {
                                     NEXUS_AUTH = credentials('nexus-deployment-credentials')
@@ -125,39 +137,6 @@ pipeline {
                                 steps {
                                     script {
                                         sh "./deliver-packages.sh '${DISTRIBUTION}'"
-                                    }
-                                }
-                            }
-                            stage('Test Ansible') {
-                                when { expression { !params.NO_DEPLOY } }
-                                steps {
-                                    script {
-                                        def REPO_URL = "https://repo.saunafs.com/repository/"
-                                        def REPO_NAME = REPO_URL + "saunafs-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}/"
-                                        def deb = sh(script: "ls -t ${DISTRIBUTION}/saunafs-*.deb | head -1", returnStdout: true).trim()
-                                        def version = getVersionFromDebFilename(deb)
-
-                                        def repoUrlParamMap = [
-                                            "ubuntu-22.04": "SAUNAFS_REPO_URL_JAMMY",
-                                            "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE"
-                                        ]
-                                        def params = [
-                                            string(name: 'SAUNAFS_VERSION', value: "${version}")
-                                        ]
-
-                                        repoUrlParamMap.each { distro, paramName ->
-                                            def value = (distro == DISTRIBUTION) ? "${REPO_NAME}" : ""
-                                            params << string(name: paramName, value: value)
-                                        }
-                                        def repoUrlParamName = repoUrlParamMap[DISTRIBUTION]
-
-                                        if (repoUrlParamName) {
-                                            build(job: 'Leil Storage Ansible/main',
-                                                parameters: params
-                                            )
-                                        } else {
-                                            error("Repository not in map for ansible tests")
-                                        }
                                     }
                                 }
                             }
@@ -171,6 +150,40 @@ pipeline {
                                             deleteDir()
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    stage('Test Ansible') {
+                        agent { label "waiting-agent" }
+                        when { expression { !params.NO_DEPLOY } }
+                        steps {
+                            script {
+                                def REPO_URL = "https://repo.saunafs.com/repository/"
+                                def REPO_NAME = REPO_URL + "saunafs-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}/"
+
+                                unstash "package-metadata-${DISTRIBUTION}"
+                                def version = readFile("${DISTRIBUTION}/package-version.txt").trim()
+
+                                def repoUrlParamMap = [
+                                    "ubuntu-22.04": "SAUNAFS_REPO_URL_JAMMY",
+                                    "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE"
+                                ]
+                                def ansibleParams = [
+                                    string(name: 'SAUNAFS_VERSION', value: "${version}")
+                                ]
+
+                                repoUrlParamMap.each { distro, paramName ->
+                                    def value = (distro == DISTRIBUTION) ? "${REPO_NAME}" : ""
+                                    ansibleParams << string(name: paramName, value: value)
+                                }
+
+                                def repoUrlParamName = repoUrlParamMap[DISTRIBUTION]
+                                if (repoUrlParamName) {
+                                    build(job: 'Leil Storage Ansible/main', parameters: ansibleParams)
+                                } else {
+                                    error("Repository not in map for ansible tests")
                                 }
                             }
                         }
