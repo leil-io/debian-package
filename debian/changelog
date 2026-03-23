@@ -1,3 +1,9 @@
+saunafs (5.8.0-1) stable; urgency=medium
+
+  * Update SaunaFS version
+
+ -- Saunafs Team <support@saunafs.com>  Mon, 23 Mar 2026 10:14:39 +0000
+
 saunafs (5.8.0~rc3-1) stable; urgency=medium
 
   * Update SaunaFS version
