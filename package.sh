@@ -22,6 +22,9 @@ the tags on this repository to change to the version you want!"
 	echo "PATCH=<path/to/patch>: Apply a single patch file"
 	echo "PATCHES_DIR=<path/to/directory>: Apply patches from directory"
 	echo "SNAPSHOT=[false|true]: Whether to add date and git info to version (default false)"
+	echo "RESOLVED_GIT_COMMIT=<sha>: Override the detected LeilFS commit for reproducible builds"
+	echo "RESOLVED_GIT_BRANCH=<name>: Override the detected LeilFS branch for reproducible builds"
+	echo "SNAPSHOT_TIMESTAMP_OVERRIDE=<timestamp>: Override the generated snapshot timestamp for reproducible snapshot versions"
 }
 
 : "${SNAPSHOT:=false}"
@@ -49,14 +52,19 @@ fi
 git clone https://github.com/leil-io/leilfs/
 cd leilfs
 git checkout "${REF}"
-GIT_COMMIT=$(git rev-parse HEAD)
+CHECKED_OUT_GIT_COMMIT="$(git rev-parse HEAD)"
+if [ -n "${RESOLVED_GIT_COMMIT}" ] && [ "${RESOLVED_GIT_COMMIT}" != "${CHECKED_OUT_GIT_COMMIT}" ]; then
+	echo "RESOLVED_GIT_COMMIT (${RESOLVED_GIT_COMMIT}) does not match checked out commit (${CHECKED_OUT_GIT_COMMIT}) for REF ${REF}" >&2
+	exit 1
+fi
+GIT_COMMIT="${RESOLVED_GIT_COMMIT:-${CHECKED_OUT_GIT_COMMIT}}"
 export GIT_COMMIT
-GIT_BRANCH="$(basename "$(git name-rev "$GIT_COMMIT" | awk '{print $2}')")"
+GIT_BRANCH="${RESOLVED_GIT_BRANCH:-$(basename "$(git name-rev "$GIT_COMMIT" | awk '{print $2}')")}"
 export GIT_BRANCH
 cd ..
 
 if [ "$SNAPSHOT" = true ]; then
-	SNAPSHOT_TS=$(date +%Y.%m.%d~%H.%M.%S)
+	SNAPSHOT_TS="${SNAPSHOT_TIMESTAMP_OVERRIDE:-$(date +%Y.%m.%d~%H.%M.%S)}"
 	SNAPSHOT_COMMIT=""
 	SNAPSHOT_BRANCH=""
 	SNAPSHOT_COMMIT="~$GIT_COMMIT"
