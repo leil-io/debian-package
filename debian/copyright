@@ -1,6 +1,6 @@
 This package was debianized by Peter aNeutrino after Fri, 15 Nov 2013 13:05:21 +0200.
 
-Sources are available for download at <http://saunafs.com/>.
+Sources are available for download at <https://github.com/leil-io/leilfs>.
 
 Author(s):
 
@@ -30,7 +30,7 @@ Copyright:
 
 Contact:
 
-    <contact (at) saunafs.com>
+    <contact (at) leil.io>
 
 License:
 
