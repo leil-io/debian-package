@@ -10,7 +10,7 @@ if [ -z "${REPO_NAME}" ]; then
 	die "\$REPO_NAME must be set"
 fi
 
-declare nexus_url="${URL:-https://repo.saunafs.com}"
+declare nexus_url="${URL:-https://repo.leil.io}"
 if [ -z "${NEXUS_AUTH}" ]; then
 	die "\$NEXUS_AUTH must be set (in format of username:password)"
 fi

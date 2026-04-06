@@ -49,13 +49,13 @@ pipeline {
 
     parameters {
         string(name: 'PACKAGE_REF', defaultValue: '', description: 'The git reference (branch, tag or hash) for the debian packaging scripts.')
-        string(name: 'SAUNAFS_REF', defaultValue: 'dev', description: 'The git reference (branch, tag or hash) to build from the saunafs repository.')
+        string(name: 'LEILFS_REF', defaultValue: 'dev', description: 'The git reference (branch, tag or hash) to build from the leilfs repository.')
         choice(name: 'REPOSITORY', choices: ['Experimental', 'Development', 'Staging', 'Production'], description: 'Target package repository.')
         booleanParam(name: 'NO_DEPLOY', defaultValue: false, description: 'If true, packages will not be deployed to the repository.')
     }
 
     environment {
-        REF = "${params.SAUNAFS_REF}"
+        REF = "${params.LEILFS_REF}"
         SNAPSHOT = willDoSnapshot(params.REPOSITORY)
         VERSION_SUFFIX = getBuildSuffix(params.REPOSITORY)
     }
@@ -160,7 +160,7 @@ pipeline {
                         when { expression { !params.NO_DEPLOY } }
                         steps {
                             script {
-                                def REPO_URL = "https://repo.saunafs.com/repository/"
+                                def REPO_URL = "https://repo.leil.io/repository/"
                                 def REPO_NAME = REPO_URL + "saunafs-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}/"
 
                                 unstash "package-metadata-${DISTRIBUTION}"
@@ -171,7 +171,7 @@ pipeline {
                                     "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE"
                                 ]
                                 def ansibleParams = [
-                                    string(name: 'SAUNAFS_VERSION', value: "${version}")
+                                    string(name: 'LEILFS_VERSION', value: "${version}")
                                 ]
 
                                 repoUrlParamMap.each { distro, paramName ->

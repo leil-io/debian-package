@@ -1,7 +1,7 @@
 Source: saunafs
 Section: admin
 Priority: extra
-Maintainer: SaunaFS <contact@saunafs.com>
+Maintainer: SaunaFS <contact@leil.io>
 Build-Depends: debhelper (>= 9),
 # Probably half the packages are not needed, but we need a thorough review of
 # this
@@ -52,7 +52,7 @@ Build-Depends: debhelper (>= 9),
 	       libsqlite3-dev,
 Rules-Requires-Root: no
 Standards-Version: 3.9.3
-Homepage: https://saunafs.org/
+Homepage: https://leil.io/
 
 Package: saunafs-dbg
 Architecture: any

@@ -4,16 +4,16 @@ set -ex
 . ./version.sh
 OUTPUT_DIR="$(pwd)/build"
 SOURCE_DIR="$(pwd)"
-BUILD_DIRECTORY="/tmp/package-saunafs"
+BUILD_DIRECTORY="/tmp/package-leilfs"
 PATCHES_DIRECTORY="${BUILD_DIRECTORY}/patches"
 
 rm -rf ${BUILD_DIRECTORY:?}
 
 print_help() {
 	echo "
-This helper script allows quickly building saunafs debian
+This helper script allows quickly building leilfs debian
 packages. By default, it will download from the releases section of
-SaunaFS github, but you can also specify a option to build from a
+LeilFS github, but you can also specify a option to build from a
 specific git reference, note that if you use a specific version ref, the
 packages will be confusingly named to the version of the debian folder. Use
 the tags on this repository to change to the version you want!"
@@ -46,8 +46,8 @@ if [ -z "$REF" ]; then
 	REF="v${VERSION}"
 fi
 
-git clone https://github.com/leil-io/saunafs/
-cd saunafs
+git clone https://github.com/leil-io/leilfs/
+cd leilfs
 git checkout "${REF}"
 GIT_COMMIT=$(git rev-parse HEAD)
 export GIT_COMMIT
@@ -73,10 +73,10 @@ else
 	DEB_VERSION="${VERSION}-${REVISION}"
 fi
 
-mv saunafs saunafs-"${UPSTREAM_VERSION}"
+mv leilfs saunafs-"${UPSTREAM_VERSION}"
 SOURCE_TAR="saunafs_${UPSTREAM_VERSION}.orig.tar.gz"
 tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-"${UPSTREAM_VERSION}"
-rm -rf saunafs
+rm -rf leilfs
 
 cp "${SOURCE_TAR}" "${OUTPUT_DIR}"
 tar xf "${SOURCE_TAR}"

@@ -1,6 +1,6 @@
-saunafs (5.0.0-1) stable; urgency=medium
+saunafs (5.0.1-1) stable; urgency=medium
 
   This is a breaking change release. For more information, see the Github
-  release page: https://github.com/leil-io/saunafs/releases/tag/v5.0.0
+  release page: https://github.com/leil-io/leilfs/releases/tag/v5.0.1
 
- -- SaunaFS Team <support@saunafs.com>  Thu, 10 Jul 2025 14:09:03 +0300
+ -- LeilFS Team <contact@leil.io>  Thu, 10 Jul 2025 14:09:03 +0300
