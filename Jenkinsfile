@@ -74,6 +74,60 @@ pipeline {
             }
         }
 
+        stage('Resolve Build Identity') {
+            agent { label "waiting-agent" }
+            steps {
+                script {
+                    def sourceRef = params.LEILFS_REF?.trim() ?: 'dev'
+
+                    def sourceIdentity
+                    withEnv(["SOURCE_REF=${sourceRef}"]) {
+                        // Use a metadata-only clone here so branches, tags, and raw commit hashes
+                        // resolve compatibly with package.sh without downloading a full working tree.
+                        sourceIdentity = sh(
+                            script: '''
+                                set -e
+                                temp_dir=$(mktemp -d)
+                                cleanup() {
+                                    rm -rf "$temp_dir"
+                                }
+                                trap cleanup EXIT
+
+                                git clone --quiet --filter=blob:none --sparse https://github.com/leil-io/leilfs/ "$temp_dir/leilfs"
+                                cd "$temp_dir/leilfs"
+                                git checkout -q "$SOURCE_REF"
+
+                                resolved_commit=$(git rev-parse HEAD)
+                                resolved_branch=$(basename "$(git name-rev "$resolved_commit" | awk '{print $2}')")
+                                printf '%s\n%s\n' "$resolved_commit" "$resolved_branch"
+                            ''',
+                            returnStdout: true
+                        ).trim().readLines()
+                    }
+
+                    def sharedSnapshotTimestamp = env.SNAPSHOT == 'true'
+                        ? sh(script: 'date +%Y.%m.%d~%H.%M.%S', returnStdout: true).trim()
+                        : ''
+
+                    def buildIdentityFile = [
+                        "REF='${sourceIdentity[0]}'",
+                        "RESOLVED_GIT_COMMIT='${sourceIdentity[0]}'",
+                        "RESOLVED_GIT_BRANCH='${sourceIdentity[1]}'",
+                        "SNAPSHOT_TIMESTAMP_OVERRIDE='${sharedSnapshotTimestamp}'"
+                    ].join('\n') + '\n'
+
+                    writeFile file: '.build-identity.env', text: buildIdentityFile
+                    stash name: 'build-identity', includes: '.build-identity.env'
+
+                    echo "Resolved LeilFS commit for all distro builds: ${sourceIdentity[0]}"
+                    echo "Resolved LeilFS branch for all distro builds: ${sourceIdentity[1]}"
+                    if (sharedSnapshotTimestamp) {
+                        echo "Shared snapshot timestamp for all distro builds: ${sharedSnapshotTimestamp}"
+                    }
+                }
+            }
+        }
+
         stage('Build, Package, and Deploy') {
             matrix {
                 axes {
@@ -102,7 +156,13 @@ pipeline {
                                             checkout scm
                                         }
 
-                                        sh './package.sh'
+                                        unstash 'build-identity'
+                                        sh '''
+                                            set -a
+                                            . ./.build-identity.env
+                                            set +a
+                                            ./package.sh
+                                        '''
                                         sh "mkdir -p ${DISTRIBUTION}"
                                         sh "mv build/* ${DISTRIBUTION}"
 
@@ -155,39 +215,64 @@ pipeline {
                         }
                     }
 
-                    stage('Test Ansible') {
-                        agent { label "waiting-agent" }
-                        when { expression { !params.NO_DEPLOY } }
-                        steps {
-                            script {
-                                def REPO_URL = "https://repo.leil.io/repository/"
-                                def REPO_NAME = REPO_URL + "saunafs-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}/"
+                }
+            }
+        }
 
-                                unstash "package-metadata-${DISTRIBUTION}"
-                                def version = readFile("${DISTRIBUTION}/package-version.txt").trim()
+        stage('Test Ansible') {
+            agent { label "waiting-agent" }
+            when { expression { !params.NO_DEPLOY } }
+            steps {
+                script {
+                    def repoUrlParamMap = [
+                        "ubuntu-22.04": "SAUNAFS_REPO_URL_JAMMY",
+                        "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE"
+                    ]
+                    // Keep this list in sync with the matrix axis above. Declarative matrix
+                    // axes require string literals here, so this stage cannot reuse a shared
+                    // Groovy list without switching to a more scripted pipeline structure.
+                    def distributions = repoUrlParamMap.keySet().toList()
 
-                                def repoUrlParamMap = [
-                                    "ubuntu-22.04": "SAUNAFS_REPO_URL_JAMMY",
-                                    "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE"
-                                ]
-                                def ansibleParams = [
-                                    string(name: 'LEILFS_VERSION', value: "${version}")
-                                ]
+                    def repoUrlBase = "https://repo.leil.io/repository/"
+                    def repoUrls = distributions.collectEntries { dist ->
+                        [(dist): "${repoUrlBase}saunafs-${dist}${getTargetRepositorySuffix(params.REPOSITORY)}/"]
+                    }
 
-                                repoUrlParamMap.each { distro, paramName ->
-                                    def value = (distro == DISTRIBUTION) ? "${REPO_NAME}" : ""
-                                    ansibleParams << string(name: paramName, value: value)
-                                }
+                    def versions = [:]
+                    repoUrls.keySet().each { distribution ->
+                        unstash "package-metadata-${distribution}"
+                        versions[distribution] = readFile("${distribution}/package-version.txt").trim()
+                    }
 
-                                def repoUrlParamName = repoUrlParamMap[DISTRIBUTION]
-                                if (repoUrlParamName) {
-                                    build(job: 'Leil Storage Ansible/main', parameters: ansibleParams)
-                                } else {
-                                    error("Repository not in map for ansible tests")
-                                }
-                            }
+                    versions.each { dist, version ->
+                        echo "Test Ansible input version for ${dist}: ${version}"
+                    }
+
+                    def distinctVersions = versions.values().toSet()
+                    if (distinctVersions.size() != 1) {
+                        error(
+                            "Expected identical package versions across distros, found: " +
+                            versions.collect { dist, version -> "${dist}='${version}'" }.join(', ')
+                        )
+                    }
+
+                    def ansibleVersion = distinctVersions.first()
+
+                    echo "Test Ansible exact shared version: ${ansibleVersion}"
+
+                    def jobParams = [string(name: 'LEILFS_VERSION', value: ansibleVersion)]
+                    distributions.each { dist ->
+                        if (repoUrlParamMap[dist]) {
+                            jobParams << string(name: repoUrlParamMap[dist], value: repoUrls[dist])
+                        } else {
+                            error("No repository URL parameter mapping found for distribution: ${dist}")
                         }
                     }
+
+                    build(
+                        job: 'Leil Storage Ansible/main',
+                        parameters: jobParams
+                    )
                 }
             }
         }
