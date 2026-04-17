@@ -1,7 +1,7 @@
 Source: saunafs
 Section: admin
 Priority: extra
-Maintainer: SaunaFS <contact@leil.io>
+Maintainer: SaunaFS <support@leil.io>
 Build-Depends: debhelper (>= 9),
 # Probably half the packages are not needed, but we need a thorough review of
 # this
