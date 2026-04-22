@@ -1,3 +1,9 @@
+saunafs (5.9.0-1) stable; urgency=medium
+
+  * Update LeilFS version
+
+ -- LeilFS Team <support@leil.io>  Wed, 22 Apr 2026 09:11:11 +0000
+
 saunafs (5.9.0~rc1-1) stable; urgency=medium
 
   * Update LeilFS version
