@@ -7,11 +7,11 @@
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
 # Short-Description:   Start saunafs-metalogger at boot time
-# Description:         saunafs-metaloggers provide metadata replication for SaunaFS.
+# Description:         saunafs-metaloggers provide metadata replication for LeilFS.
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/sfsmetalogger
+DAEMON=/usr/sbin/leil-metalogger
 NAME=sfsmetalogger
 DESC=saunafs-metalogger
 DEFAULT_WORKING_USER=saunafs

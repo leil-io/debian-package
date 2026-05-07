@@ -1,14 +1,14 @@
 [Unit]
-Description=SaunaFS master server daemon
+Description=LeilFS master server daemon
 After=syslog.target network-online.target network.target
 PartOf=saunafs-uraft.service
 
 [Service]
 Type=forking
 TimeoutSec=0
-ExecStart=/usr/sbin/saunafs-uraft-helper start-saunafs-ha-master
-ExecStop=/usr/sbin/saunafs-uraft-helper stop-saunafs-ha-master
-ExecReload=/usr/sbin/saunafs-uraft-helper reload-saunafs-ha-master
+ExecStart=/usr/sbin/leil-uraft-helper start-saunafs-ha-master
+ExecStop=/usr/sbin/leil-uraft-helper stop-saunafs-ha-master
+ExecReload=/usr/sbin/leil-uraft-helper reload-saunafs-ha-master
 Restart=no
 
 [Install]

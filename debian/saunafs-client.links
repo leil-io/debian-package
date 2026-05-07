@@ -1,1 +1,1 @@
-/usr/bin/sfsmount /sbin/mount.safs
+/usr/bin/leil-mount /sbin/mount.safs

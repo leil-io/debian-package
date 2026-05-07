@@ -9,18 +9,18 @@
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
 # Short-Description:   Start up the saunafs-cgiserv server daemon
-# Description:         SaunaFS is a distributed, scalable, fault-tolerant and highly available file system.
-#                      This service starts up the SaunaFS cgiserv server daemon.
+# Description:         LeilFS is a distributed, scalable, fault-tolerant and highly available file system.
+#                      This service starts up the LeilFS cgiserv server daemon.
 ### END INIT INFO
 
 NAME=saunafs-cgiserv
 EXEC=/usr/bin/python3
-DAEMON=/usr/sbin/saunafs-cgiserver
+DAEMON=/usr/sbin/leil-cgiserver
 SAUNAFSCGISERV_USER=saunafs
 SAUNAFSCGISERV_GROUP=saunafs
 BIND_HOST=0.0.0.0
 BIND_PORT=9425
-ROOT_PATH=/usr/share/sfscgi
+ROOT_PATH=/usr/share/leil-cgi
 
 # Exit if executable is not installed
 [ -x $DAEMON ] || exit 0

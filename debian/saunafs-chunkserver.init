@@ -7,11 +7,11 @@
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
 # Short-Description:   Start saunafs-chunkserver at boot time
-# Description:         saunafs-chunkservers provide storage space for SaunaFS.
+# Description:         saunafs-chunkservers provide storage space for LeilFS.
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/sfschunkserver
+DAEMON=/usr/sbin/leil-chunkserver
 NAME=sfschunkserver
 DESC=saunafs-chunkserver
 DEFAULT_WORKING_USER=saunafs
