@@ -1,13 +1,13 @@
 [Unit]
-Description=SaunaFS metalogger server daemon
+Description=LeilFS metalogger server daemon
 Documentation=man:sfsmetalogger
 After=network-online.target network.target
 
 [Service]
 Type=forking
-ExecStart=/usr/sbin/sfsmetalogger start
-ExecStop=/usr/sbin/sfsmetalogger stop
-ExecReload=/usr/sbin/sfsmetalogger reload
+ExecStart=/usr/sbin/leil-metalogger start
+ExecStop=/usr/sbin/leil-metalogger stop
+ExecReload=/usr/sbin/leil-metalogger reload
 Restart=on-abort
 
 [Install]

@@ -16,5 +16,5 @@
 ## port to listen on (default: 9425)
 # BIND_PORT=9425
 
-## local path to use as HTTP document root (default: /usr/share/sfscgi)
-# ROOT_PATH=/usr/share/sfscgi
+## local path to use as HTTP document root (default: /usr/share/leil-cgi)
+# ROOT_PATH=/usr/share/leil-cgi

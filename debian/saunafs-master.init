@@ -7,11 +7,11 @@
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
 # Short-Description:   Start saunafs-master at boot time
-# Description:         saunafs-master provides metadata management for SaunaFS.
+# Description:         saunafs-master provides metadata management for LeilFS.
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/sfsmaster
+DAEMON=/usr/sbin/leil-master
 NAME=sfsmaster
 DESC=saunafs-master
 DEFAULT_WORKING_USER=saunafs
