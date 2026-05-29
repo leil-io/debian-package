@@ -81,15 +81,15 @@ else
 	DEB_VERSION="${VERSION}-${REVISION}"
 fi
 
-mv leilfs saunafs-"${UPSTREAM_VERSION}"
-SOURCE_TAR="saunafs_${UPSTREAM_VERSION}.orig.tar.gz"
-tar --exclude-vcs -czf "${SOURCE_TAR}" saunafs-"${UPSTREAM_VERSION}"
+mv leilfs leil-"${UPSTREAM_VERSION}"
+SOURCE_TAR="leil_${UPSTREAM_VERSION}.orig.tar.gz"
+tar --exclude-vcs -czf "${SOURCE_TAR}" leil-"${UPSTREAM_VERSION}"
 rm -rf leilfs
 
 cp "${SOURCE_TAR}" "${OUTPUT_DIR}"
 tar xf "${SOURCE_TAR}"
 
-SOURCE_DIR="${BUILD_DIRECTORY}/saunafs-${UPSTREAM_VERSION}"
+SOURCE_DIR="${BUILD_DIRECTORY}/leil-${UPSTREAM_VERSION}"
 rm "${SOURCE_DIR}/debian" -rf
 cp -r "${BUILD_DIRECTORY}/debian" "${SOURCE_DIR}"
 
@@ -131,7 +131,7 @@ debuild \
 
 
 # Package metadata
-cp "${BUILD_DIRECTORY}/saunafs_"* "${OUTPUT_DIR}"
+cp "${BUILD_DIRECTORY}/leil_"* "${OUTPUT_DIR}"
 # Actual packages
-cp "${BUILD_DIRECTORY}/saunafs-"*".deb" "${OUTPUT_DIR}"
+cp "${BUILD_DIRECTORY}/leil-"*".deb" "${OUTPUT_DIR}"
 rm -rf "${BUILD_DIRECTORY:?}"

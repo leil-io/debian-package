@@ -1,6 +1,6 @@
-# /etc/default/saunafs-uraft
+# /etc/default/leil-uraft
 
-# Start saunafs-uraft from init.d script on boot.
+# Start leil-uraft from init.d script on boot.
 #   Only allowed values are "true" and "false".
 #   Undefined values default to "false".
 SAUNAFSURAFT_ENABLE=false

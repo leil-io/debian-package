@@ -1,6 +1,6 @@
-# /etc/default/saunafs-metalogger
+# /etc/default/leil-metalogger
 
-# Start saunafs-metalogger from init.d script on boot.
+# Start leil-metalogger from init.d script on boot.
 #   Only allowed values are "true" and "false".
 #   Undefined values default to "false".
 SAUNAFSMETALOGGER_ENABLE=false

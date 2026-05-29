@@ -1,42 +1,42 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:            saunafs-metalogger
+# Provides:            leil-metalogger
 # Required-Start:      $network $remote_fs
 # Required-Stop:       $remote_fs
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
-# Short-Description:   Start saunafs-metalogger at boot time
-# Description:         saunafs-metaloggers provide metadata replication for LeilFS.
+# Short-Description:   Start leil-metalogger at boot time
+# Description:         leil-metaloggers provide metadata replication for LeilFS.
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/leil-metalogger
-NAME=sfsmetalogger
-DESC=saunafs-metalogger
-DEFAULT_WORKING_USER=saunafs
-DEFAULT_WORKING_GROUP=saunafs
-DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/sfsmetalogger.cfg
+NAME=leil-metalogger
+DESC=leil-metalogger
+DEFAULT_WORKING_USER=leil
+DEFAULT_WORKING_GROUP=leil
+DEFAULT_DATA_PATH=/var/lib/leil
+DEFAULT_CFG=/etc/leil/leil-metalogger.cfg
 
 test -e $DAEMON || exit 0
 
-# Include saunafs-metalogger defaults if available
+# Include leil-metalogger defaults if available
 . /lib/lsb/init-functions
 SAUNAFSMETALOGGER_ENABLE=false
 SAUNAFSMETALOGGER_CONFIG_FILE=
-SAUNAFSMETALOGGER_DEFAULTS_FILE=/etc/default/saunafs-metalogger
+SAUNAFSMETALOGGER_DEFAULTS_FILE=/etc/default/leil-metalogger
 if [ -s "$SAUNAFSMETALOGGER_DEFAULTS_FILE" ]; then
     . "$SAUNAFSMETALOGGER_DEFAULTS_FILE"
     case "x$SAUNAFSMETALOGGER_ENABLE" in
         xtrue) ;;
         xfalse)
-            log_warning_msg "saunafs-metalogger not enabled in \"$SAUNAFSMETALOGGER_DEFAULTS_FILE\", exiting..."
+            log_warning_msg "leil-metalogger not enabled in \"$SAUNAFSMETALOGGER_DEFAULTS_FILE\", exiting..."
             exit 0
             ;;
         *)
             log_failure_msg "value of SAUNAFSMETALOGGER_ENABLE must be either 'true' or 'false';"
-            log_failure_msg "not starting saunafs-metalogger."
+            log_failure_msg "not starting leil-metalogger."
             exit 1
             ;;
     esac

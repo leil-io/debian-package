@@ -1,9 +1,9 @@
 VERSION="4.6.0-rc3"
-BUILD_DIRECTORY="/tmp/dev-saunafs"
+BUILD_DIRECTORY="/tmp/dev-leil"
 DEBIAN_DIR="$(pwd)/debian"
 
-SOURCE_TAR="saunafs_${VERSION}.orig.tar.gz"
-SOURCE_DIR="${BUILD_DIRECTORY}/leilfs-${VERSION}"
+SOURCE_TAR="leil_${VERSION}.orig.tar.gz"
+SOURCE_DIR="${BUILD_DIRECTORY}/leil-${VERSION}"
 
 mkdir $BUILD_DIRECTORY
 cd $BUILD_DIRECTORY

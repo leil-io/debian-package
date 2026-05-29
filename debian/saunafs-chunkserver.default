@@ -1,6 +1,6 @@
-# /etc/default/saunafs-chunkserver
+# /etc/default/leil-chunkserver
 
-# Start saunafs-chunkserver from init.d script on boot.
+# Start leil-chunkserver from init.d script on boot.
 #   Only allowed values are "true" and "false".
 #   Undefined values default to "false".
 SAUNAFSCHUNKSERVER_ENABLE=false

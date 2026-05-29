@@ -2,9 +2,9 @@
 
 # Ensure proper permissions on data dir and run dir.
 
-SAUNAFS_USER="saunafs"
-SAUNAFS_GROUP="saunafs"
-SAUNAFS_DATA_PATH="/var/lib/saunafs"
+SAUNAFS_USER="leil"
+SAUNAFS_GROUP="leil"
+SAUNAFS_DATA_PATH="/var/lib/leil"
 
 check_dirs() {
 	# check that the metadata dir exists

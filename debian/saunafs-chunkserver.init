@@ -1,43 +1,43 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:            saunafs-chunkserver
+# Provides:            leil-chunkserver
 # Required-Start:      $network $remote_fs
 # Required-Stop:       $remote_fs
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
-# Short-Description:   Start saunafs-chunkserver at boot time
-# Description:         saunafs-chunkservers provide storage space for LeilFS.
+# Short-Description:   Start leil-chunkserver at boot time
+# Description:         leil-chunkservers provide storage space for LeilFS.
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/leil-chunkserver
-NAME=sfschunkserver
-DESC=saunafs-chunkserver
-DEFAULT_WORKING_USER=saunafs
-DEFAULT_WORKING_GROUP=saunafs
-DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/sfschunkserver.cfg
+NAME=leil-chunkserver
+DESC=leil-chunkserver
+DEFAULT_WORKING_USER=leil
+DEFAULT_WORKING_GROUP=leil
+DEFAULT_DATA_PATH=/var/lib/leil
+DEFAULT_CFG=/etc/leil/leil-chunkserver.cfg
 
 test -e $DAEMON || exit 0
 
-# Include saunafs-chunkserver defaults if available
+# Include leil-chunkserver defaults if available
 . /lib/lsb/init-functions
 SAUNAFSCHUNKSERVER_ENABLE=false
 SAUNAFSCHUNKSERVER_CONFIG_FILE=
-SAUNAFSCHUNKSERVER_DEFAULTS_FILE=/etc/default/saunafs-chunkserver
+SAUNAFSCHUNKSERVER_DEFAULTS_FILE=/etc/default/leil-chunkserver
 
 if [ -s "$SAUNAFSCHUNKSERVER_DEFAULTS_FILE" ]; then
     . "$SAUNAFSCHUNKSERVER_DEFAULTS_FILE"
     case "x$SAUNAFSCHUNKSERVER_ENABLE" in
         xtrue) ;;
         xfalse)
-            log_warning_msg "saunafs-chunkserver not enabled in \"$SAUNAFSCHUNKSERVER_DEFAULTS_FILE\", exiting..."
+            log_warning_msg "leil-chunkserver not enabled in \"$SAUNAFSCHUNKSERVER_DEFAULTS_FILE\", exiting..."
             exit 0
             ;;
         *)
             log_failure_msg "value of SAUNAFSCHUNKSERVER_ENABLE must be either 'true' or 'false';"
-            log_failure_msg "not starting saunafs-chunkserver."
+            log_failure_msg "not starting leil-chunkserver."
             exit 1
             ;;
     esac

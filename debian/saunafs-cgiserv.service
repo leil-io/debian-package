@@ -1,6 +1,6 @@
 [Unit]
 Description=LeilFS CGI server daemon
-Documentation=man:saunafs-cgiserver
+Documentation=man:leil-cgiserver
 After=network-online.target network.target
 
 [Service]
@@ -10,7 +10,7 @@ Environment=ROOT_PATH=/usr/share/leil-cgi
 EnvironmentFile=-/etc/default/%p
 ExecStart=/usr/sbin/leil-cgiserver -H ${BIND_HOST} -P ${BIND_PORT} -R ${ROOT_PATH}
 Restart=on-abort
-User=saunafs
+User=leil
 
 [Install]
 WantedBy=multi-user.target

@@ -5,5 +5,4 @@ usr/sbin/sfsmetadump
 usr/sbin/leil-metarestore
 usr/sbin/sfsmetarestore
 usr/sbin/leil-restoremaster
-usr/sbin/sfsrestoremaster
-var/lib/saunafs/metadata.sfs.empty
+var/lib/leil/metadata.sfs.empty

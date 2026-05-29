@@ -1,23 +1,23 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:            saunafs-cgiserv
+# Provides:            leil-cgiserv
 # Required-Start:      $local_fs $network $syslog $remote_fs
 # Required-Stop:       $local_fs $syslog $remote_fs
 # Should-Start:        $syslog
 # Should-Stop:         $network $syslog
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
-# Short-Description:   Start up the saunafs-cgiserv server daemon
+# Short-Description:   Start up the leil-cgiserv server daemon
 # Description:         LeilFS is a distributed, scalable, fault-tolerant and highly available file system.
 #                      This service starts up the LeilFS cgiserv server daemon.
 ### END INIT INFO
 
-NAME=saunafs-cgiserv
+NAME=leil-cgiserv
 EXEC=/usr/bin/python3
 DAEMON=/usr/sbin/leil-cgiserver
-SAUNAFSCGISERV_USER=saunafs
-SAUNAFSCGISERV_GROUP=saunafs
+LEILCGISERV_USER=leil
+LEILCGISERV_GROUP=leil
 BIND_HOST=0.0.0.0
 BIND_PORT=9425
 ROOT_PATH=/usr/share/leil-cgi

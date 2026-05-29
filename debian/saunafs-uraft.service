@@ -1,18 +1,18 @@
 [Unit]
 Description=LeilFS uraft high availability daemon
-Requires=saunafs-ha-master.service
+Requires=leil-ha-master.service
 After=network-online.target network.target
-After=saunafs-ha-master.service
+After=leil-ha-master.service
 
 [Service]
 Type=simple
-PIDFile=/var/run/saunafs-uraft.pid
+PIDFile=/var/run/leil-uraft.pid
 TimeoutSec=0
 ExecStart=/usr/sbin/leil-uraft
 ExecStopPost=/usr/sbin/leil-uraft-helper drop-ip
 Restart=on-failure
 RestartSec=60
-User=saunafs
+User=leil
 
 [Install]
 WantedBy=multi-user.target

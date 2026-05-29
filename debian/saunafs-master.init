@@ -1,42 +1,42 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:            saunafs-master
+# Provides:            leil-master
 # Required-Start:      $network $remote_fs
 # Required-Stop:       $remote_fs
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
-# Short-Description:   Start saunafs-master at boot time
-# Description:         saunafs-master provides metadata management for LeilFS.
+# Short-Description:   Start leil-master at boot time
+# Description:         leil-master provides metadata management for LeilFS.
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/leil-master
-NAME=sfsmaster
-DESC=saunafs-master
-DEFAULT_WORKING_USER=saunafs
-DEFAULT_WORKING_GROUP=saunafs
-DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/sfsmaster.cfg
+NAME=leil-master
+DESC=leil-master
+DEFAULT_WORKING_USER=leil
+DEFAULT_WORKING_GROUP=leil
+DEFAULT_DATA_PATH=/var/lib/leil
+DEFAULT_CFG=/etc/leil/leil-master.cfg
 
 test -e $DAEMON || exit 0
 
-# Include saunafs-master defaults if available
+# Include leil-master defaults if available
 . /lib/lsb/init-functions
 SAUNAFSMASTER_ENABLE=false
 SAUNAFSMASTER_CONFIG_FILE=
-SAUNAFSMASTER_DEFAULTS_FILE=/etc/default/saunafs-master
+SAUNAFSMASTER_DEFAULTS_FILE=/etc/default/leil-master
 if [ -s "$SAUNAFSMASTER_DEFAULTS_FILE" ]; then
     . "$SAUNAFSMASTER_DEFAULTS_FILE"
     case "x$SAUNAFSMASTER_ENABLE" in
         xtrue) ;;
         xfalse)
-            log_warning_msg "saunafs-master not enabled in \"$SAUNAFSMASTER_DEFAULTS_FILE\", exiting..."
+            log_warning_msg "leil-master not enabled in \"$SAUNAFSMASTER_DEFAULTS_FILE\", exiting..."
             exit 0
             ;;
         *)
             log_failure_msg "value of SAUNAFSMASTER_ENABLE must be either 'true' or 'false';"
-            log_failure_msg "not starting saunafs-master."
+            log_failure_msg "not starting leil-master."
             exit 1
             ;;
     esac

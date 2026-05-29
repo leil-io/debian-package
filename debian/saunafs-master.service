@@ -1,6 +1,6 @@
 [Unit]
 Description=LeilFS master server daemon
-Documentation=man:sfsmaster
+Documentation=man:leil-master
 After=network-online.target network.target
 
 [Service]

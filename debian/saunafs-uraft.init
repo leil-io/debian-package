@@ -1,24 +1,24 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:            saunafs-uraft
+# Provides:            leil-uraft
 # Required-Start:      $local_fs $network $syslog $remote_fs
 # Required-Stop:       $local_fs $syslog $remote_fs
 # Should-Start:        $syslog
 # Should-Stop:         $network $syslog
 # Default-Start:       2 3 4 5
 # Default-Stop:        0 1 6
-# Short-Description:   Start up saunafs-master managed by saunafs-uraft high availability daemon
+# Short-Description:   Start up leil-master managed by leil-uraft high availability daemon
 # Description:         LeilFS is a distributed, scalable, fault-tolerant and highly available file system.
 #                      This service starts up LeilFS master managed by high availability daemon.
 ### END INIT INFO
 
-NAME=saunafs-uraft
+NAME=leil-uraft
 DAEMON=/usr/sbin/leil-uraft
 MASTER=/usr/sbin/leil-master
 MASTER_OPTS="-o ha-cluster-managed -o initial-personality=shadow"
-SAUNAFSURAFT_USER=saunafs
-SAUNAFSURAFT_GROUP=saunafs
+SAUNAFSURAFT_USER=leil
+SAUNAFSURAFT_GROUP=leil
 
 # Exit if executable is not installed
 [ -x $DAEMON ] || exit 0
@@ -32,21 +32,21 @@ RETRY=TERM/30/KILL/5
 # define LSB log_* functions.
 . /lib/lsb/init-functions
 
-# Include saunafs-master defaults if available
+# Include leil-master defaults if available
 SAUNAFSURAFT_ENABLE=false
 SAUNAFSURAFT_CONFIG_FILE=
-SAUNAFSURAFT_DEFAULTS_FILE=/etc/default/saunafs-uraft
+SAUNAFSURAFT_DEFAULTS_FILE=/etc/default/leil-uraft
 if [ -s "$SAUNAFSURAFT_DEFAULTS_FILE" ] ; then
     . "$SAUNAFSURAFT_DEFAULTS_FILE"
     case "x$SAUNAFSURAFT_ENABLE" in
         xtrue) ;;
         xfalse)
-           log_warning_msg "saunafs-uraft not enabled in \"$SAUNAFSURAFT_DEFAULTS_FILE\", exiting..."
+           log_warning_msg "leil-uraft not enabled in \"$SAUNAFSURAFT_DEFAULTS_FILE\", exiting..."
            exit 0
            ;;
         *)
             log_failure_msg "value of SAUNAFSURAFT_ENABLE must be either 'true' or 'false';"
-            log_failure_msg "not starting saunafs-uraft."
+            log_failure_msg "not starting leil-uraft."
             exit 1
             ;;
     esac
