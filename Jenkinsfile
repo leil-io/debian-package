@@ -191,7 +191,7 @@ pipeline {
                             stage('Deploy') {
                                 environment {
                                     NEXUS_AUTH = credentials('nexus-deployment-credentials')
-                                    REPO_NAME = "saunafs-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}"
+                                    REPO_NAME = "leil-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}"
                                 }
                                 when { expression { !params.NO_DEPLOY } }
                                 steps {

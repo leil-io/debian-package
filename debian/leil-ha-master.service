@@ -1,7 +1,7 @@
 [Unit]
 Description=LeilFS master server daemon
 After=syslog.target network-online.target network.target
-PartOf=leilaft.service
+PartOf=leil-uraft.service
 
 [Service]
 Type=forking
