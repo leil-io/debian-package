@@ -1,2 +1,4 @@
 usr/bin/leil-admin
 usr/bin/leil-probe
+usr/bin/saunafs-admin
+usr/bin/saunafs-probe

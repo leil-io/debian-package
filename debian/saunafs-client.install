@@ -1,3 +1,5 @@
 etc/bash_completion.d/saunafs
 usr/bin/leil
+usr/bin/saunafs
 usr/bin/leil-mount
+usr/bin/sfsmount
