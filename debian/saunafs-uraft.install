@@ -1,2 +1,4 @@
 usr/sbin/leil-uraft
+usr/sbin/saunafs-uraft
 usr/sbin/leil-uraft-helper
+usr/sbin/saunafs-uraft-helper
