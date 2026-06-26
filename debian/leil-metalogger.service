@@ -1,0 +1,14 @@
+[Unit]
+Description=LeilFS metalogger server daemon
+Documentation=man:leil-metalogger
+After=network-online.target network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/leil-metalogger start
+ExecStop=/usr/sbin/leil-metalogger stop
+ExecReload=/usr/sbin/leil-metalogger reload
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

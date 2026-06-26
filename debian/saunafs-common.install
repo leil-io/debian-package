@@ -1,2 +1,0 @@
-migrations/* /usr/lib/saunafs/migrations/
-debian/migration-scripts/* /usr/lib/saunafs/migration-scripts

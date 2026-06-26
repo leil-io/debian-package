@@ -167,7 +167,7 @@ pipeline {
                                         sh "mv build/* ${DISTRIBUTION}"
 
                                         def deb = sh(
-                                            script: "ls -t ${DISTRIBUTION}/saunafs-*.deb | head -1",
+                                            script: "ls -t ${DISTRIBUTION}/leil-*.deb | head -1",
                                             returnStdout: true
                                         ).trim()
                                         def version = getVersionFromDebFilename(deb)
@@ -191,7 +191,7 @@ pipeline {
                             stage('Deploy') {
                                 environment {
                                     NEXUS_AUTH = credentials('nexus-deployment-credentials')
-                                    REPO_NAME = "saunafs-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}"
+                                    REPO_NAME = "leil-${DISTRIBUTION}${getTargetRepositorySuffix(params.REPOSITORY)}"
                                 }
                                 when { expression { !params.NO_DEPLOY } }
                                 steps {
@@ -235,7 +235,7 @@ pipeline {
 
                     def repoUrlBase = "https://repo.leil.io/repository/"
                     def repoUrls = distributions.collectEntries { dist ->
-                        [(dist): "${repoUrlBase}saunafs-${dist}${getTargetRepositorySuffix(params.REPOSITORY)}/"]
+                        [(dist): "${repoUrlBase}leil-${dist}${getTargetRepositorySuffix(params.REPOSITORY)}/"]
                     }
 
                     def versions = [:]

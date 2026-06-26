@@ -34,15 +34,15 @@ override_dh_auto_configure:
 # 	dh_gencontrol -- $(if $(version),-v$(version),)
 
 override_dh_strip:
-	dh_strip --dbg-package=saunafs-dbg
+	dh_strip --dbg-package=leil-dbg
 
 override_dh_installinit:
 	dh_installinit --no-start
-	dh_installinit --no-start -psaunafs-uraft --name=saunafs-ha-master
+	dh_installinit --no-start -pleil-uraft --name=leil-ha-master
 
 override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-start
-	dh_installsystemd --no-enable --no-start -psaunafs-uraft --name=saunafs-ha-master
+	dh_installsystemd --no-enable --no-start -pleil-uraft --name=leil-ha-master
 
 %:
 	dh $@ --buildsystem=cmake

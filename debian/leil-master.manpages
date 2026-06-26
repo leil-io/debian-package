@@ -1,0 +1,10 @@
+usr/share/man/man5/leil-globaliolimits.cfg.5
+usr/share/man/man5/leil-exports.cfg.5
+usr/share/man/man5/leil-goals.cfg.5
+usr/share/man/man5/leil-master.cfg.5
+usr/share/man/man5/leil-topology.cfg.5
+usr/share/man/man7/leil.7
+usr/share/man/man8/leil-master.8
+usr/share/man/man8/leil-metadump.8
+usr/share/man/man8/leil-metarestore.8
+usr/share/man/man8/leil-restoremaster.8

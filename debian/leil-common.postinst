@@ -1,0 +1,52 @@
+#!/bin/sh
+
+set -e
+
+leil_limits_conf="/etc/security/limits.d/10-leil.conf"
+leil_pam_d="/etc/pam.d/leil"
+
+case "${1}" in
+	configure)
+		if ! getent passwd leil > /dev/null 2>&1
+		then
+			adduser --quiet --system --group --no-create-home --home /var/lib/leil leil
+		fi
+		if [ ! -f $leil_limits_conf ]; then
+			echo "leil soft nofile 131072" > $leil_limits_conf
+			echo "leil hard nofile 131072" >> $leil_limits_conf
+			chmod 0644 $leil_limits_conf
+		fi
+		if [ ! -f $leil_pam_d ]; then
+			echo "session	required	pam_limits.so" > $leil_pam_d
+		fi
+		;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+
+		;;
+
+	*)
+		echo "postinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+# Ensure proper permissions on data dir and run dir.
+
+LEIL_USER="leil"
+LEIL_GROUP="leil"
+LEIL_DATA_PATH="/var/lib/leil"
+
+check_dirs() {
+	# check that the metadata dir exists
+	if [ ! -d "$LEIL_DATA_PATH" ]; then
+		mkdir -p "$LEIL_DATA_PATH"
+	fi
+	chmod 0755 "$LEIL_DATA_PATH"
+	chown -R $LEIL_USER:$LEIL_GROUP "$LEIL_DATA_PATH"
+}
+
+check_dirs
+#DEBHELPER#
+
+exit 0

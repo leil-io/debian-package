@@ -1,0 +1,15 @@
+[Unit]
+Description=LeilFS master server daemon
+Documentation=man:leil-master
+After=network-online.target network.target
+
+[Service]
+Type=forking
+TimeoutSec=0
+ExecStart=/usr/sbin/leil-master start
+ExecStop=/usr/sbin/leil-master stop
+ExecReload=/usr/sbin/leil-master reload
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

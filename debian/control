@@ -1,4 +1,4 @@
-Source: saunafs
+Source: leil
 Section: admin
 Priority: extra
 Maintainer: LeilFS <support@leil.io>
@@ -54,14 +54,14 @@ Rules-Requires-Root: no
 Standards-Version: 3.9.3
 Homepage: https://leil.io/
 
-Package: saunafs-dbg
+Package: leil-dbg
 Architecture: any
 Section: debug
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Debugging symbols for LeilFS
  Debugging symbols for all LeilFS binaries
 
-Package: saunafs-common
+Package: leil-common
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
          adduser
@@ -72,67 +72,67 @@ Description: LeilFS common files
  migrations between major versions and other utilities.
 
 
-Package: saunafs-master
+Package: leil-master
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common
+Depends: ${shlibs:Depends}, ${misc:Depends}, leil-common
 Description: LeilFS master server
  LeilFS master (metadata) server.
 
-Package: saunafs-metalogger
+Package: leil-metalogger
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common
+Depends: ${shlibs:Depends}, ${misc:Depends}, leil-common
 Description: LeilFS metalogger server
  LeilFS metalogger (metadata replication) server.
 
-Package: saunafs-chunkserver
+Package: leil-chunkserver
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-common
+Depends: ${shlibs:Depends}, ${misc:Depends}, leil-common
 Description: LeilFS data server
  LeilFS data server.
 
-Package: saunafs-client
+Package: leil-client
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, bash-completion
 Description: LeilFS client
  LeilFS clients: leil-mount and leil tools.
 
-Package: saunafs-lib-client
+Package: leil-lib-client
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: LeilFS client C/C++ library
  LeilFS client library for C/C++ bindings.
 
-Package: saunafs-nfs-ganesha
+Package: leil-nfs-ganesha
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-lib-client
+Depends: ${shlibs:Depends}, ${misc:Depends}, leil-lib-client
 Description: LeilFS plugin for nfs-ganesha
  LeilFS fsal plugin for nfs-ganesha.
 
-Package: saunafs-adm
+Package: leil-adm
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: LeilFS administration tools
  LeilFS administration tools: leil-admin
 
-Package: saunafs-cgi
+Package: leil-cgi
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
          python3
 Description: LeilFS CGI Monitor
  LeilFS CGI Monitor.
 
-Package: saunafs-cgiserv
+Package: leil-cgiserv
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, saunafs-cgi,
+Depends: ${shlibs:Depends}, ${misc:Depends}, leil-cgi,
          python3,
          python3-chardet
 Description: Simple CGI-capable HTTP server to run LeilFS CGI Monitor
  Simple CGI-capable HTTP server to run LeilFS CGI Monitor.
 
-Package: saunafs-uraft
+Package: leil-uraft
 Architecture: any
-Depends: saunafs-master,
-         saunafs-adm,
+Depends: leil-master,
+         leil-adm,
          iputils-arping,
          sudo,
          ${shlibs:Depends},

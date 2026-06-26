@@ -1,0 +1,5 @@
+etc/bash_completion.d/leil
+usr/bin/leil
+usr/bin/saunafs
+usr/bin/leil-mount
+usr/bin/sfsmount

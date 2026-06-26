@@ -1,0 +1,33 @@
+#!/bin/sh
+
+set -e
+
+leil_limits_conf="/etc/security/limits.d/10-leil.conf"
+leil_pam_d="/etc/pam.d/leil"
+
+case "${1}" in
+	purge)
+		if [ -x /usr/sbin/deluser ]
+		then
+			deluser --quiet leil > /dev/null || true
+		fi
+		if [ -f $leil_limits_conf ]; then
+			rm -f $leil_limits_conf
+		fi
+		if [ -f $leil_pam_d ]; then
+			rm -f $leil_pam_d
+		fi
+		;;
+
+	remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+		;;
+
+	*)
+		echo "postrm called with unknown argument \`${1}'" >&2
+		exit 1
+esac
+
+#DEBHELPER#
+
+exit 0

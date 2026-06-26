@@ -1,0 +1,8 @@
+usr/sbin/leil-master
+usr/sbin/sfsmaster
+usr/sbin/leil-metadump
+usr/sbin/sfsmetadump
+usr/sbin/leil-metarestore
+usr/sbin/sfsmetarestore
+usr/sbin/leil-restoremaster
+var/lib/leil/metadata.sfs.empty

@@ -1,0 +1,2 @@
+migrations/* /usr/lib/leil/migrations/
+debian/migration-scripts/* /usr/lib/leil/migration-scripts
