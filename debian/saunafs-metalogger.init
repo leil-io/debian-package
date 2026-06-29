@@ -17,7 +17,7 @@ DESC=saunafs-metalogger
 DEFAULT_WORKING_USER=saunafs
 DEFAULT_WORKING_GROUP=saunafs
 DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/sfsmetalogger.cfg
+DEFAULT_CFG=/etc/saunafs/leil-metalogger.cfg
 
 test -e $DAEMON || exit 0
 

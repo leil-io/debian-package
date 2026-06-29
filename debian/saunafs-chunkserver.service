@@ -1,6 +1,6 @@
 [Unit]
 Description=LeilFS chunkserver daemon
-Documentation=man:sfschunkserver
+Documentation=man:leil-chunkserver
 After=network-online.target network.target
 
 [Service]

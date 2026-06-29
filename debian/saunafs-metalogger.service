@@ -1,6 +1,6 @@
 [Unit]
 Description=LeilFS metalogger server daemon
-Documentation=man:sfsmetalogger
+Documentation=man:leil-metalogger
 After=network-online.target network.target
 
 [Service]
