@@ -1,2 +1,4 @@
+usr/share/doc/saunafs-client/examples/leil-mount.cfg
+usr/share/doc/saunafs-client/examples/leil-iolimits.cfg
 usr/share/doc/saunafs-client/examples/sfsmount.cfg
 usr/share/doc/saunafs-client/examples/sfsiolimits.cfg

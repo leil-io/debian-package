@@ -1,3 +1,8 @@
+usr/share/doc/saunafs-master/examples/leil-globaliolimits.cfg
+usr/share/doc/saunafs-master/examples/leil-exports.cfg
+usr/share/doc/saunafs-master/examples/leil-goals.cfg
+usr/share/doc/saunafs-master/examples/leil-master.cfg
+usr/share/doc/saunafs-master/examples/leil-topology.cfg
 usr/share/doc/saunafs-master/examples/sfsglobaliolimits.cfg
 usr/share/doc/saunafs-master/examples/sfsexports.cfg
 usr/share/doc/saunafs-master/examples/sfsgoals.cfg

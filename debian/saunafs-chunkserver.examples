@@ -1,2 +1,4 @@
+usr/share/doc/saunafs-chunkserver/examples/leil-chunkserver.cfg
+usr/share/doc/saunafs-chunkserver/examples/leil-hdd.cfg
 usr/share/doc/saunafs-chunkserver/examples/sfschunkserver.cfg
 usr/share/doc/saunafs-chunkserver/examples/sfshdd.cfg

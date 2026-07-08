@@ -1,6 +1,6 @@
 [Unit]
 Description=LeilFS CGI server daemon
-Documentation=man:saunafs-cgiserver
+Documentation=man:leil-cgiserver
 After=network-online.target network.target
 
 [Service]
