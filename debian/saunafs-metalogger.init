@@ -16,8 +16,8 @@ NAME=sfsmetalogger
 DESC=saunafs-metalogger
 DEFAULT_WORKING_USER=saunafs
 DEFAULT_WORKING_GROUP=saunafs
-DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/leil-metalogger.cfg
+DEFAULT_DATA_PATH=/var/lib/leil
+DEFAULT_CFG=/etc/leil/leil-metalogger.cfg
 
 test -e $DAEMON || exit 0
 
@@ -25,13 +25,13 @@ test -e $DAEMON || exit 0
 . /lib/lsb/init-functions
 SAUNAFSMETALOGGER_ENABLE=false
 SAUNAFSMETALOGGER_CONFIG_FILE=
-SAUNAFSMETALOGGER_DEFAULTS_FILE=/etc/default/saunafs-metalogger
-if [ -s "$SAUNAFSMETALOGGER_DEFAULTS_FILE" ]; then
-    . "$SAUNAFSMETALOGGER_DEFAULTS_FILE"
+LEILFSMETALOGGER_DEFAULTS_FILE=/etc/default/saunafs-metalogger
+if [ -s "$LEILFSMETALOGGER_DEFAULTS_FILE" ]; then
+    . "$LEILFSMETALOGGER_DEFAULTS_FILE"
     case "x$SAUNAFSMETALOGGER_ENABLE" in
         xtrue) ;;
         xfalse)
-            log_warning_msg "saunafs-metalogger not enabled in \"$SAUNAFSMETALOGGER_DEFAULTS_FILE\", exiting..."
+            log_warning_msg "saunafs-metalogger not enabled in \"$LEILFSMETALOGGER_DEFAULTS_FILE\", exiting..."
             exit 0
             ;;
         *)

@@ -16,8 +16,8 @@ NAME=sfsmaster
 DESC=saunafs-master
 DEFAULT_WORKING_USER=saunafs
 DEFAULT_WORKING_GROUP=saunafs
-DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/leil-master.cfg
+DEFAULT_DATA_PATH=/var/lib/leil
+DEFAULT_CFG=/etc/leil/leil-master.cfg
 
 test -e $DAEMON || exit 0
 
@@ -25,13 +25,13 @@ test -e $DAEMON || exit 0
 . /lib/lsb/init-functions
 SAUNAFSMASTER_ENABLE=false
 SAUNAFSMASTER_CONFIG_FILE=
-SAUNAFSMASTER_DEFAULTS_FILE=/etc/default/saunafs-master
-if [ -s "$SAUNAFSMASTER_DEFAULTS_FILE" ]; then
-    . "$SAUNAFSMASTER_DEFAULTS_FILE"
+LEILFSMASTER_DEFAULTS_FILE=/etc/default/saunafs-master
+if [ -s "$LEILFSMASTER_DEFAULTS_FILE" ]; then
+    . "$LEILFSMASTER_DEFAULTS_FILE"
     case "x$SAUNAFSMASTER_ENABLE" in
         xtrue) ;;
         xfalse)
-            log_warning_msg "saunafs-master not enabled in \"$SAUNAFSMASTER_DEFAULTS_FILE\", exiting..."
+            log_warning_msg "saunafs-master not enabled in \"$LEILFSMASTER_DEFAULTS_FILE\", exiting..."
             exit 0
             ;;
         *)

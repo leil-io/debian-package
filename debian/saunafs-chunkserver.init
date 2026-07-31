@@ -16,8 +16,8 @@ NAME=sfschunkserver
 DESC=saunafs-chunkserver
 DEFAULT_WORKING_USER=saunafs
 DEFAULT_WORKING_GROUP=saunafs
-DEFAULT_DATA_PATH=/var/lib/saunafs
-DEFAULT_CFG=/etc/saunafs/leil-chunkserver.cfg
+DEFAULT_DATA_PATH=/var/lib/leil
+DEFAULT_CFG=/etc/leil/leil-chunkserver.cfg
 
 test -e $DAEMON || exit 0
 
@@ -25,14 +25,14 @@ test -e $DAEMON || exit 0
 . /lib/lsb/init-functions
 SAUNAFSCHUNKSERVER_ENABLE=false
 SAUNAFSCHUNKSERVER_CONFIG_FILE=
-SAUNAFSCHUNKSERVER_DEFAULTS_FILE=/etc/default/saunafs-chunkserver
+LEILFSCHUNKSERVER_DEFAULTS_FILE=/etc/default/saunafs-chunkserver
 
-if [ -s "$SAUNAFSCHUNKSERVER_DEFAULTS_FILE" ]; then
-    . "$SAUNAFSCHUNKSERVER_DEFAULTS_FILE"
+if [ -s "$LEILFSCHUNKSERVER_DEFAULTS_FILE" ]; then
+    . "$LEILFSCHUNKSERVER_DEFAULTS_FILE"
     case "x$SAUNAFSCHUNKSERVER_ENABLE" in
         xtrue) ;;
         xfalse)
-            log_warning_msg "saunafs-chunkserver not enabled in \"$SAUNAFSCHUNKSERVER_DEFAULTS_FILE\", exiting..."
+            log_warning_msg "saunafs-chunkserver not enabled in \"$LEILFSCHUNKSERVER_DEFAULTS_FILE\", exiting..."
             exit 0
             ;;
         *)

@@ -9,7 +9,7 @@ case "${1}" in
 	configure)
 		if ! getent passwd saunafs > /dev/null 2>&1
 		then
-			adduser --quiet --system --group --no-create-home --home /var/lib/saunafs saunafs
+			adduser --quiet --system --group --no-create-home --home /var/lib/leil saunafs
 		fi
 		if [ ! -f $sau_limits_conf ]; then
 			echo "saunafs soft nofile 131072" > $sau_limits_conf
@@ -35,15 +35,15 @@ esac
 
 SAUNAFS_USER="saunafs"
 SAUNAFS_GROUP="saunafs"
-SAUNAFS_DATA_PATH="/var/lib/saunafs"
+LEIL_DATA_PATH="/var/lib/leil"
 
 check_dirs() {
 	# check that the metadata dir exists
-	if [ ! -d "$SAUNAFS_DATA_PATH" ]; then
-		mkdir -p "$SAUNAFS_DATA_PATH"
+	if [ ! -d "$LEIL_DATA_PATH" ]; then
+		mkdir -p "$LEIL_DATA_PATH"
 	fi
-	chmod 0755 "$SAUNAFS_DATA_PATH"
-	chown -R $SAUNAFS_USER:$SAUNAFS_GROUP "$SAUNAFS_DATA_PATH"
+	chmod 0755 "$LEIL_DATA_PATH"
+	chown -R $SAUNAFS_USER:$SAUNAFS_GROUP "$LEIL_DATA_PATH"
 }
 
 check_dirs
