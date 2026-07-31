@@ -35,13 +35,13 @@ RETRY=TERM/30/KILL/5
 # Include saunafs-master defaults if available
 SAUNAFSURAFT_ENABLE=false
 SAUNAFSURAFT_CONFIG_FILE=
-SAUNAFSURAFT_DEFAULTS_FILE=/etc/default/saunafs-uraft
-if [ -s "$SAUNAFSURAFT_DEFAULTS_FILE" ] ; then
-    . "$SAUNAFSURAFT_DEFAULTS_FILE"
+LEILFSURAFT_DEFAULTS_FILE=/etc/default/saunafs-uraft
+if [ -s "$LEILFSURAFT_DEFAULTS_FILE" ] ; then
+    . "$LEILFSURAFT_DEFAULTS_FILE"
     case "x$SAUNAFSURAFT_ENABLE" in
         xtrue) ;;
         xfalse)
-           log_warning_msg "saunafs-uraft not enabled in \"$SAUNAFSURAFT_DEFAULTS_FILE\", exiting..."
+           log_warning_msg "saunafs-uraft not enabled in \"$LEILFSURAFT_DEFAULTS_FILE\", exiting..."
            exit 0
            ;;
         *)
