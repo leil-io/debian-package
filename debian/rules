@@ -28,6 +28,7 @@ override_dh_auto_configure:
 	-DGENERATE_GIT_INFO=OFF                            \
 	-DGIT_COMMIT=$(GIT_COMMIT)                         \
 	-DGIT_BRANCH=$(GIT_BRANCH)                         \
+	-DASCIIDOCTOR_AUTO_SETUP=OFF                       \
 	;
 
 # override_dh_gencontrol:
