@@ -133,7 +133,7 @@ pipeline {
                 axes {
                     axis {
                         name 'DISTRIBUTION'
-                        values 'ubuntu-22.04', 'ubuntu-24.04'
+                        values 'ubuntu-22.04', 'ubuntu-24.04', 'ubuntu-26.04'
                     }
                 }
 
@@ -226,7 +226,8 @@ pipeline {
                 script {
                     def repoUrlParamMap = [
                         "ubuntu-22.04": "SAUNAFS_REPO_URL_JAMMY",
-                        "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE"
+                        "ubuntu-24.04": "SAUNAFS_REPO_URL_NOBLE",
+                        "ubuntu-26.04": "SAUNAFS_REPO_URL_RESOLUTE",
                     ]
                     // Keep this list in sync with the matrix axis above. Declarative matrix
                     // axes require string literals here, so this stage cannot reuse a shared
