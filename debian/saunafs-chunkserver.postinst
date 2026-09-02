@@ -4,15 +4,15 @@
 
 SAUNAFS_USER="saunafs"
 SAUNAFS_GROUP="saunafs"
-SAUNAFS_DATA_PATH="/var/lib/saunafs"
+LEIL_DATA_PATH="/var/lib/leil"
 
 check_dirs() {
 	# check that the metadata dir exists
-	if [ ! -d "$SAUNAFS_DATA_PATH" ]; then
-		mkdir -p "$SAUNAFS_DATA_PATH"
+	if [ ! -d "$LEIL_DATA_PATH" ]; then
+		mkdir -p "$LEIL_DATA_PATH"
 	fi
-	chmod 0755 "$SAUNAFS_DATA_PATH"
-	chown -R $SAUNAFS_USER:$SAUNAFS_GROUP "$SAUNAFS_DATA_PATH"
+	chmod 0755 "$LEIL_DATA_PATH"
+	chown -R $SAUNAFS_USER:$SAUNAFS_GROUP "$LEIL_DATA_PATH"
 }
 
 check_dirs

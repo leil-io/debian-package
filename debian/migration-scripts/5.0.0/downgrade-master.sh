@@ -167,7 +167,7 @@ stop_metalogger_server() {
 run_data_migration() {
 	log_message "Running data migration script..."
 	# Call the saunafs-pro migration script, passing the data directory
-	if bash /usr/lib/saunafs/migrations/5.0.0/rollback/downgrade-changelogs.sh -d "${MASTER_DATA_DIR}"; then
+	if bash /usr/lib/leil/migrations/5.0.0/rollback/downgrade-changelogs.sh -d "${MASTER_DATA_DIR}"; then
 		log_message "Data migration script executed successfully"
 	else
 		log_message "Data migration script executed with errors"
