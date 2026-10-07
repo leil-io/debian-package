@@ -1,5 +1,5 @@
-usr/include/saunafs/saunafs_c_api.h
-usr/include/saunafs/saunafs_error_codes.h
+usr/include/leil/saunafs_c_api.h
+usr/include/leil/saunafs_error_codes.h
 usr/lib/*/libsaunafs-client-cpp.a
 usr/lib/*/libsaunafs-client-cpp_pic.a
 usr/lib/*/libsaunafs-client.a

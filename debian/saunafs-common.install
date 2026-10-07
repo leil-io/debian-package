@@ -1,2 +1,2 @@
-migrations/* /usr/lib/saunafs/migrations/
-debian/migration-scripts/* /usr/lib/saunafs/migration-scripts
+migrations/* /usr/lib/leil/migrations/
+debian/migration-scripts/* /usr/lib/leil/migration-scripts
