@@ -1,5 +1,13 @@
+usr/include/leil/leil_c_api.h
+usr/include/leil/leil_error_codes.h
 usr/include/leil/saunafs_c_api.h
 usr/include/leil/saunafs_error_codes.h
+usr/lib/*/libleil-client-cpp.a
+usr/lib/*/libleil-client-cpp_pic.a
+usr/lib/*/libleil-client.a
+usr/lib/*/libleil-client.so
+usr/lib/*/libleil-client_pic.a
+usr/lib/*/libleilmount_shared.so
 usr/lib/*/libsaunafs-client-cpp.a
 usr/lib/*/libsaunafs-client-cpp_pic.a
 usr/lib/*/libsaunafs-client.a
